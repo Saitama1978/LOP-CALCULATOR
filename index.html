@@ -37,48 +37,56 @@
         .dev-footer { text-align: center; margin-top: 30px; padding-top: 15px; border-top: 1px solid #334155; font-size: 12px; color: #64748B; }
         .dev-name { color: #F59E0B; font-weight: bold; font-size: 14px; letter-spacing: 0.5px; margin-top: 3px; }
 
-        /* FIX ENHANCEMENT: ULTRA LIGHT PRINT OVERRIDES FOR PDF */
+        /* CRITICAL FIX: HARD OVERRIDE FOR PRINT PREVIEW AND PDF EXPORT */
         @media print {
-            body { background-color: white !important; color: black !important; padding: 0; }
-            .container { box-shadow: none !important; background-color: white !important; width: 100% !important; max-width: 100% !important; padding: 0 !important; }
-            button, select, input, label, h1, h3 { display: none !important; }
-            .sight-card { display: none !important; }
+            /* Force ang buong HTML at Body na hubaran ng dark background */
+            html, body { background: #ffffff !important; background-color: #ffffff !important; color: #000000 !important; padding: 0 !important; margin: 0 !important; }
+            .container { box-shadow: none !important; background: #ffffff !important; background-color: #ffffff !important; width: 100% !important; max-width: 100% !important; padding: 0 !important; }
             
-            .result-box { display: block !important; border: none !important; background-color: white !important; color: black !important; padding: 0 !important; margin-top: 0 !important; }
+            /* Itago ang lahat ng control forms at buttons para malinis */
+            button, select, input, label, h1, h3, .sight-card, .btn-secondary { display: none !important; }
             
-            /* Pinagaan ang Voyage Metadata Box (Light gray border, puting background, itim na letra) */
+            /* Puwersahing pumuti ang mismong main container ng report */
+            .result-box { display: block !important; border: none !important; background: #ffffff !important; background-color: #ffffff !important; color: #000000 !important; padding: 0 !important; margin-top: 0 !important; }
+            .print-title { color: #000000 !important; font-weight: bold !important; }
+            
+            /* Puti at high-contrast na metadata panel */
             #printMetadata { 
                 display: block !important; 
-                border: 1px solid #cbd5e1 !important; 
+                border: 1px solid #94a3b8 !important; 
+                background: #f8fafc !important; 
                 background-color: #f8fafc !important; 
-                color: #0f172a !important; 
+                color: #000000 !important; 
                 padding: 15px !important; 
                 font-size: 13px !important;
                 line-height: 1.6 !important;
                 border-radius: 6px !important;
                 margin-bottom: 20px !important;
             }
+            #printMetadata b { color: #000000 !important; }
             
-            /* Puti at malinis na results table para madaling basahin */
-            .result-table { width: 100% !important; color: black !important; margin-top: 15px !important; }
-            .result-table th, .result-table td { border: 1px solid #94a3b8 !important; color: black !important; padding: 8px !important; }
+            /* Malinis na data reduction table */
+            .result-table { width: 100% !important; background-color: #ffffff !important; color: #000000 !important; margin-top: 15px !important; }
+            .result-table th, .result-table td { border: 1px solid #64748b !important; color: #000000 !important; padding: 8px !important; background: none !important; }
             
-            /* Ginawang light gray ang header ng table para lutang ang mga text block */
-            .result-table th { background-color: #f1f5f9 !important; color: #0f172a !important; font-weight: bold !important; }
+            /* Table header color override */
+            .result-table th { background-color: #e2e8f0 !important; color: #000000 !important; font-weight: bold !important; }
             
-            /* Force black indicators para sa printing text styling */
-            .result-table td style { color: black !important; }
+            /* Force override para sa mga dynamic inline colored texts ng cells */
+            .result-table td, .result-table td b, .result-table td span { color: #000000 !important; }
             
-            #map { display: block !important; height: 380px !important; border: 1px solid #94a3b8 !important; page-break-inside: avoid; margin-top: 20px !important; }
-            .dev-footer { color: #475569 !important; border-top: 1px solid #cbd5e1 !important; margin-top: 40px; }
-            .dev-name { color: black !important; }
+            /* Map block protection */
+            #map { display: block !important; height: 380px !important; border: 1px solid #64748b !important; page-break-inside: avoid; margin-top: 20px !important; background-color: #ffffff !important; }
+            
+            .dev-footer { color: #475569 !important; border-top: 1px solid #94a3b8 !important; margin-top: 40px !important; }
+            .dev-name { color: #000000 !important; font-weight: bold !important; }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>⚓ 3-SIGHT CELESTIAL FIX ENGINE <span style="font-size:12px; color:#10B981; vertical-align:middle;">[ULTIMATE LOG v3.51]</span></h1>
+    <h1>⚓ 3-SIGHT CELESTIAL FIX ENGINE <span style="font-size:12px; color:#10B981; vertical-align:middle;">[ULTIMATE LOG v3.52]</span></h1>
 
     <h3>📝 Vessel Voyage Log</h3>
     <div class="grid-2">
@@ -361,8 +369,9 @@
             
             let intercept = (ho - hc) * 60; let dirTxt = intercept >= 0 ? "TOWARDS" : "AWAY";
             
+            // Note: the colors style is preserved for normal browser layout, but completely blocked by print stylesheet overrides
             tbody.innerHTML += `<tr>
-                <td style="font-weight:bold; color:${colors[i-1]}">Sight ${i}</td>
+                <td><b>Sight ${i}</b></td>
                 <td><b>${data.name}</b></td>
                 <td>${hsDeg}° ${hsMin}'</td>
                 <td>${ieVal >= 0 ? '+' : ''}${ieVal}'</td>
@@ -372,8 +381,8 @@
                 <td>${data.dec.toFixed(2)}°</td>
                 <td>${lha.toFixed(2)}°</td>
                 <td>${hc.toFixed(4)}°</td>
-                <td style="font-weight:bold; color:#10B981">${Math.abs(intercept).toFixed(1)} NM ${dirTxt}</td>
-                <td style="font-weight:bold; color:#F59E0B">${zn.toFixed(1)}° T</td>
+                <td><b>${Math.abs(intercept).toFixed(1)} NM ${dirTxt}</b></td>
+                <td><b>${zn.toFixed(1)}° T</b></td>
             </tr>`;
             
             globalTxtData += `[SIGHT #${i} REDUCTION DETAILS - ${data.name}]\n`;
@@ -390,7 +399,7 @@
             
             plotLopVector(apLat, apLon, zn, intercept, colors[i-1], data.name);
         }
-        globalTxtData += `\nGenerated Engine v3.51 | Developer: 2/O Renante Fullo | Marine Solutions 2026\n`;
+        globalTxtData += `\nGenerated Engine v3.52 | Developer: 2/O Renante Fullo | Marine Solutions 2026\n`;
         document.getElementById('resultBox').style.display = "block";
         map.setView([apLat, apLon], 8); map.invalidateSize();
     }
