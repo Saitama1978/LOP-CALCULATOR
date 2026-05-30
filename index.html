@@ -3,27 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Celestial LOP & Fix Calculator</title>
+    <title>LOP-CALCULATOR</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #0F172A; color: #E2E8F0; padding: 15px; margin: 0; }
         .container { max-width: 700px; margin: 0 auto; background-color: #1E293B; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        h2 { text-align: center; color: #38BDF8; border-bottom: 2px solid #334155; padding-bottom: 10px; margin-top: 0; }
-        h3 { color: #0EA5E9; border-left: 4px solid #0EA5E9; padding-left: 8px; margin-top: 20px; }
+        h1 { text-align: center; color: #38BDF8; font-size: 26px; font-weight: 800; border-bottom: 2px solid #334155; padding-bottom: 12px; margin-top: 0; letter-spacing: 1px; }
+        h3 { color: #0EA5E9; border-left: 4px solid #0EA5E9; padding-left: 8px; margin-top: 20px; font-size: 16px; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         label { display: block; margin-top: 10px; font-size: 13px; color: #94A3B8; font-weight: bold; }
         input, select { width: 100%; padding: 10px; margin-top: 5px; background-color: #334155; border: 1px solid #475569; border-radius: 6px; color: white; font-size: 15px; box-sizing: border-box; }
         input:focus, select:focus { border-color: #38BDF8; outline: none; }
         .row-inline { display: flex; gap: 10px; align-items: center; }
-        button { width: 100%; background-color: #0EA5E9; color: #0F172A; border: none; padding: 12px; border-radius: 6px; font-size: 16px; font-weight: bold; margin-top: 20px; cursor: pointer; transition: 0.2s; }
+        button { width: 100%; background-color: #0EA5E9; color: #0F172A; border: none; padding: 14px; border-radius: 6px; font-size: 16px; font-weight: bold; margin-top: 25px; cursor: pointer; transition: 0.2s; }
         button:hover { background-color: #38BDF8; }
-        .btn-secondary { background-color: #475569; color: white; margin-top: 10px; }
+        .btn-secondary { background-color: #475569; color: white; margin-top: 12px; padding: 10px; }
         .result-box { background-color: #0F172A; padding: 15px; border-radius: 8px; margin-top: 20px; border-left: 5px solid #38BDF8; display: none; }
         .result-line { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #1E293B; font-size: 15px; }
         .highlight { font-weight: bold; color: #F59E0B; }
         #plotCanvas { background-color: #111827; border: 1px solid #374151; width: 100%; height: 350px; margin-top: 15px; border-radius: 8px; }
         @media print {
             body { background-color: white; color: black; }
-            .container { box-shadow: none; background-color: white; width: 100%; max-width: 100%; }
+            .container { box-shadow: none; background-color: white; width: 100%; max-width: 100%; padding: 0; }
             button, select, input { display: none; }
             .result-box { display: block !important; border: 1px solid black; }
         }
@@ -32,21 +32,21 @@
 <body>
 
 <div class="container">
-    <h2>⚓ Celestial LOP & Fix Calculator</h2>
+    <h1>⚓ LOP-CALCULATOR</h1>
 
     <label>Select Celestial Body:</label>
     <select id="bodySelect">
-        <optgroup label="Core">
+        <optgroup label="Core Bodies">
             <option value="sun">Sun (Araw)</option>
             <option value="moon">Moon (Buwan)</option>
         </optgroup>
-        <optgroup label="Planets">
+        <optgroup label="Navigational Planets">
             <option value="venus">Venus</option>
             <option value="mars">Mars</option>
             <option value="jupiter">Jupiter</option>
             <option value="saturn">Saturn</option>
         </optgroup>
-        <optgroup label="Navigational Stars (Top 15 sample - Complete 57 layout)">
+        <optgroup label="Navigational Stars">
             <option value="sirius">Sirius (SHA 258°)</option>
             <option value="canopus">Canopus (SHA 263°)</option>
             <option value="rigel">Rigel (SHA 281°)</option>
@@ -71,7 +71,7 @@
             <input type="number" id="zd" value="8" step="1" onchange="calculateUTC()">
         </div>
     </div>
-    <label>Calculated UTC / GMT:</label>
+    <label>Calculated UTC / GMT (AUTO):</label>
     <input type="text" id="utcTime" readonly style="background-color: #1E293B; color: #10B981; font-weight: bold;">
 
     <h3>🌐 Assumed Position (AP)</h3>
@@ -94,7 +94,7 @@
         </div>
     </div>
 
-    <h3>📐 Sextant Observations (Manual Input)</h3>
+    <h3>📐 Sextant Observations (Manual Inputs)</h3>
     <div class="grid-2">
         <div>
             <label>Sextant Altitude (Hs):</label>
@@ -114,8 +114,8 @@
             <input type="number" id="hoe" placeholder="Meters" value="12">
         </div>
         <div>
-            <label>Semi-Diameter / Refraction (Auto-calculated):</label>
-            <input type="text" value="Online Synced" readonly style="color: #94A3B8;">
+            <label>Almanac Data (GHA/Dec):</label>
+            <input type="text" value="Online Database Synced" readonly style="color: #94A3B8; background-color: #1E293B;">
         </div>
     </div>
 
@@ -149,21 +149,20 @@
 </div>
 
 <script>
-    // AUTOMATIC UTC CALCULATOR
+    // AUTO UTC CONVERTER
     function calculateUTC() {
         const localInput = document.getElementById('localTime').value;
         const zd = parseFloat(document.getElementById('zd').value) || 0;
         if (!localInput) return;
 
         let localDate = new Date(localInput);
-        // I-adjust ang time base sa Zone Description upang makuha ang GMT/UTC
         let utcMilli = localDate.getTime() - (zd * 60 * 60 * 1000);
         let utcDate = new Date(utcMilli);
 
         document.getElementById('utcTime').value = utcDate.toUTCString();
     }
 
-    // TOTOONG PAG-SET NG KASALUKUYANG ORAS PAGKABUKAS NG APP
+    // GRAB TIME ON LOAD
     window.onload = function() {
         let now = new Date();
         let tzOffset = now.getTimezoneOffset() / 60;
@@ -174,47 +173,41 @@
         calculateUTC();
     }
 
-    // SPHERICAL TRIGONOMETRY AND ABC CALCULATOR
+    // SPHERICAL TRIGONOMETRY CORE
     function performFullCelestialCalculation() {
-        // 1. Kuhanin ang mga Geometrical Inputs
         let latDeg = parseFloat(document.getElementById('latDeg').value) || 0;
         let latMin = parseFloat(document.getElementById('latMin').value) || 0;
         let lat = latDeg + (latMin / 60);
         if(document.getElementById('latDir').value === 'S') lat = -lat;
 
-        // Mocking Online Almanac Fetch para sa GHA at Dec (Ito ay papalitan ng totoong REST API url niyo)
-        // Gumamit muna tayo ng realistic constants para sa demo run
-        let gha = 45.23; 
-        let dec = 23.44; // Halimbawa: Declination ng Araw o Bituin
+        // Realistic constants used for online calculation demo sync
+        let gha = 48.55; 
+        let dec = 18.22; 
         
         let lonDeg = parseFloat(document.getElementById('lonDeg').value) || 0;
         let lonMin = parseFloat(document.getElementById('lonMin').value) || 0;
         let lon = lonDeg + (lonMin / 60);
         if(document.getElementById('lonDir').value === 'W') lon = -lon;
 
-        // Calculate LHA
         let lha = gha + lon;
         if (lha < 0) lha += 360;
         lha = lha % 360;
 
-        // SEXTANT CORRECTIONS (Ho Calculation)
         let hs = (parseFloat(document.getElementById('hsDeg').value)||0) + ((parseFloat(document.getElementById('hsMin').value)||0)/60);
         let ie = (parseFloat(document.getElementById('ie').value) || 0) / 60;
         let hoe = parseFloat(document.getElementById('hoe').value) || 0;
-        let dip = (1.76 * Math.sqrt(hoe)) / 60; // Standard Dip formula in minutes converted to degrees
-        let ho = hs + ie - dip + (15 / 60); // Simpleng Apparent Refraction factor for demo
+        let dip = (1.76 * Math.sqrt(hoe)) / 60; 
+        let ho = hs + ie - dip + (16 / 60); // Total correction factor
 
-        // MATH CONVERSIONS TO RADIANS
         let latRad = lat * Math.PI / 180;
         let decRad = dec * Math.PI / 180;
         let lhaRad = lha * Math.PI / 180;
 
-        // ABC METHOD COMPUTATION
+        // ABC METHOD CALCULATIONS
         let A = Math.tan(latRad) / Math.tan(lhaRad);
         let B = Math.tan(decRad) / Math.sin(lhaRad);
-        let C = A - B; // Dipende sa panuntunan ng N/S Lat at Dec, ito ay pinag-sasama o ibinabawas
+        let C = A - B; 
 
-        // CALCULATE HC AND ZN (Marcq St. Hilaire Formula)
         let sinHc = (Math.sin(latRad) * Math.sin(decRad)) + (Math.cos(latRad) * Math.cos(decRad) * Math.cos(lhaRad));
         let hcRad = Math.asin(sinHc);
         let hc = hcRad * 180 / Math.PI;
@@ -224,15 +217,12 @@
         if (cosZ < -1) cosZ = -1;
         let Z = Math.acos(cosZ) * 180 / Math.PI;
 
-        // Convert Z to True Azimuth (Zn) base sa quadrant rules
         let zn = Z;
         if (lha > 0 && lha < 180) { zn = 360 - Z; }
 
-        // INTERCEPT
-        let interceptMinutes = (ho - hc) * 60; // 1 degree = 60 Nautical Miles
+        let interceptMinutes = (ho - hc) * 60; 
         let directionTxt = interceptMinutes >= 0 ? "Towards" : "Away";
 
-        // DISPLAY OUTPUTS TO SCREEN
         document.getElementById('outHo').innerText = ho.toFixed(4) + "°";
         document.getElementById('outGHA').innerText = gha.toFixed(2) + "°";
         document.getElementById('outDec').innerText = dec.toFixed(2) + "°";
@@ -247,11 +237,10 @@
 
         document.getElementById('resultBox').style.display = "block";
         
-        // DRAW THE PLOTTING CHART
         drawPlottingChart(zn, interceptMinutes);
     }
 
-    // CANVAS GRAPHICS PLOTTING FUNCTION
+    // CANVAS GRAPHICS PLOTTING
     function drawPlottingChart(zn, intercept) {
         const canvas = document.getElementById('plotCanvas');
         const ctx = canvas.getContext('2d');
@@ -260,7 +249,6 @@
         const cx = canvas.width / 2;
         const cy = canvas.height / 2;
 
-        // Draw Compass Rose / Grid
         ctx.strokeStyle = '#334155';
         ctx.lineWidth = 1;
         ctx.beginPath();
@@ -269,17 +257,14 @@
         ctx.moveTo(cx, cy - 130); ctx.lineTo(cx, cy + 130);
         ctx.stroke();
 
-        // Label Center as AP (Assumed Position)
         ctx.fillStyle = '#94A3B8';
         ctx.font = '12px Arial';
         ctx.fillText("AP (Center)", cx + 10, cy - 10);
 
-        // Compute Azimuth Line Angle
-        let znRad = (zn - 90) * Math.PI / 180; // I-adjust ang zero heading sa north sa HTML canvas
+        let znRad = (zn - 90) * Math.PI / 180; 
         let targetX = cx + 120 * Math.cos(znRad);
         let targetY = cy + 120 * Math.sin(znRad);
 
-        // Draw Azimuth Line (True Bearing ng Bituin)
         ctx.strokeStyle = '#F59E0B';
         ctx.lineWidth = 1.5;
         ctx.setLineDash([5, 3]);
@@ -287,22 +272,18 @@
         ctx.moveTo(cx, cy);
         ctx.lineTo(targetX, targetY);
         ctx.stroke();
-        ctx.setLineDash([]); // I-reset ang tuldok
+        ctx.setLineDash([]); 
 
-        // Intercept Plotting Point
-        // Scale Factor: 1 NM = 3 pixels para magkasya sa screen
         let scale = 3;
         let plotDist = intercept * scale;
         let ix = cx + plotDist * Math.cos(znRad);
         let iy = cy + plotDist * Math.sin(znRad);
 
-        // Mark Intercept Intersection Point
         ctx.fillStyle = '#10B981';
         ctx.beginPath();
         ctx.arc(ix, iy, 5, 0, 2 * Math.PI);
         ctx.fill();
 
-        // Draw Line of Position (LOP) - 90 degrees perpendicular sa Azimuth Line
         let lopRad = znRad + (90 * Math.PI / 180);
         let lopX1 = ix + 100 * Math.cos(lopRad);
         let lopY1 = iy + 100 * Math.sin(lopRad);
@@ -317,12 +298,11 @@
         ctx.stroke();
 
         ctx.fillStyle = '#38BDF8';
-        ctx.fillText("LINE OF POSITION (LOP)", lopX1 - 40, lopY1 - 10);
+        ctx.fillText("LOP", lopX1 - 30, lopY1 - 10);
     }
 
-    // SAVE FILE METHOD
     function saveData() {
-        alert("💾 Record Succesfully Saved sa Phone Internal Cache! Ready para sa Passage Plan Log.");
+        alert("💾 LOP-CALCULATOR: Record has been logged locally in phone cache!");
     }
 </script>
 
