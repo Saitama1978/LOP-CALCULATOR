@@ -28,7 +28,6 @@
         .dev-footer { text-align: center; margin-top: 30px; padding-top: 15px; border-top: 1px solid #334155; font-size: 12px; color: #64748B; }
         .dev-name { color: #F59E0B; font-weight: bold; font-size: 14px; letter-spacing: 0.5px; margin-top: 3px; }
 
-        /* MGA PAGBABAGO PARA SA IMPRESIYON O PRINTING */
         @media print {
             body { background-color: white !important; color: black !important; }
             .container { box-shadow: none !important; background-color: white !important; width: 100% !important; max-width: 100% !important; padding: 0 !important; }
@@ -83,17 +82,64 @@
             <option value="jupiter">Jupiter</option>
             <option value="saturn">Saturn</option>
         </optgroup>
-        <optgroup label="Navigational Stars">
-            <option value="sirius" selected>Sirius (SHA 258° / Dec -16°)</option>
-            <option value="canopus">Canopus (SHA 263° / Dec -52°)</option>
-            <option value="rigel">Rigel (SHA 281° / Dec -08°)</option>
-            <option value="achernar">Achernar (SHA 335° / Dec -57°)</option>
-            <option value="vega">Vega (SHA 96° / Dec +38°)</option>
-            <option value="arcturus">Arcturus (SHA 145° / Dec +19°)</option>
-            <option value="aldebaran">Aldebaran (SHA 290° / Dec +16°)</option>
-            <option value="antares">Antares (SHA 112° / Dec -26°)</option>
-            <option value="spica">Spica (SHA 158° / Dec -11°)</option>
-            <option value="pollux">Pollux (SHA 243° / Dec +28°)</option>
+        <optgroup label="57 Navigational Selected Stars (Almanac Standard)">
+            <option value="alpheratz">1. Alpheratz (SHA 357.6° / Dec +29.2°)</option>
+            <option value="ankaa">2. Ankaa (SHA 353.0° / Dec -42.2°)</option>
+            <option value="schedar">3. Schedar (SHA 349.3° / Dec +56.6°)</option>
+            <option value="diphda">4. Diphda (SHA 349.1° / Dec -18.0°)</option>
+            <option value="achernar">5. Achernar (SHA 335.3° / Dec -57.2°)</option>
+            <option value="hamal">6. Hamal (SHA 327.9° / Dec +23.5°)</option>
+            <option value="akarnar">7. Acamar (SHA 315.2° / Dec -40.3°)</option>
+            <option value="menkar">8. Menkar (SHA 314.1° / Dec +4.1°)</option>
+            <option value="mirfak">9. Mirfak (SHA 308.7° / Dec +49.9°)</option>
+            <option value="aldebaran">10. Aldebaran (SHA 290.9° / Dec +16.5°)</option>
+            <option value="rigel">11. Rigel (SHA 281.1° / Dec -8.2°)</option>
+            <option value="capella">12. Capella (SHA 280.6° / Dec +46.0°)</option>
+            <option value="bellatrix">13. Bellatrix (SHA 278.3° / Dec +6.4°)</option>
+            <option value="elnath">14. Elnath (SHA 278.1° / Dec +28.6°)</option>
+            <option value="alnilam">15. Alnilam (SHA 275.8° / Dec -1.2°)</option>
+            <option value="betelgeuse">16. Betelgeuse (SHA 271.0° / Dec +7.4°)</option>
+            <option value="canopus">17. Canopus (SHA 263.9° / Dec -52.7°)</option>
+            <option value="sirius" selected>18. Sirius (SHA 258.4° / Dec -16.7°)</option>
+            <option value="adhara">19. Adhara (SHA 255.4° / Dec -29.0°)</option>
+            <option value="procyon">20. Procyon (SHA 245.0° / Dec +5.2°)</option>
+            <option value="pollux">21. Pollux (SHA 243.4° / Dec +28.0°)</option>
+            <option value="avior">22. Avior (SHA 234.2° / Dec -59.5°)</option>
+            <option value="suhail">23. Suhail (SHA 222.9° / Dec -43.4°)</option>
+            <option value="miaplacidus">24. Miaplacidus (SHA 221.4° / Dec -69.8°)</option>
+            <option value="alphard">25. Alphard (SHA 218.0° / Dec -8.7°)</option>
+            <option value="regulus">26. Regulus (SHA 207.8° / Dec +12.0°)</option>
+            <option value="algieba">27. Algieba (SHA 205.7° / Dec +19.8°)</option>
+            <option value="merak">28. Merak (SHA 182.1° / Dec +56.3°)</option>
+            <option value="dubhe">29. Dubhe (SHA 193.9° / Dec +61.7°)</option>
+            <option value="denebola">30. Denebola (SHA 182.6° / Dec +14.6°)</option>
+            <option value="gienah">31. Gienah (SHA 175.9° / Dec -17.5°)</option>
+            <option value="acrux">32. Acrux (SHA 173.2° / Dec -63.2°)</option>
+            <option value="gacrux">33. Gacrux (SHA 172.1° / Dec -57.2°)</option>
+            <option value="alioth">34. Alioth (SHA 166.4° / Dec +56.0°)</option>
+            <option value="spica">35. Spica (SHA 158.4° / Dec -11.2°)</option>
+            <option value="alcaid">36. Alkaid (SHA 153.0° / Dec +49.3°)</option>
+            <option value="hadar">37. Hadar (SHA 148.8° / Dec -60.4°)</option>
+            <option value="menkent">38. Menkent (SHA 148.1° / Dec -36.4°)</option>
+            <option value="arcturus">39. Arcturus (SHA 145.9° / Dec +19.1°)</option>
+            <option value="rigil_kent">40. Rigil Kentaurus (SHA 139.9° / Dec -60.8°)</option>
+            <option value="zubenelgenubi">41. Zubenelgenubi (SHA 137.1° / Dec -16.1°)</option>
+            <option value="kochab">42. Kochab (SHA 137.3° / Dec +74.2°)</option>
+            <option value="alphecca">43. Alphecca (SHA 126.1° / Dec +26.7°)</option>
+            <option value="antares">44. Antares (SHA 112.3° / Dec -26.4°)</option>
+            <option value="atria">45. Atria (SHA 107.2° / Dec -69.0°)</option>
+            <option value="sabik">46. Sabik (SHA 102.2° / Dec -15.7°)</option>
+            <option value="shaula">47. Shaula (SHA 96.4° / Dec -37.1°)</option>
+            <option value="rasalhague">48. Rasalhague (SHA 96.1° / Dec +12.6°)</option>
+            <option value="etamin">49. Eltanin (SHA 90.1° / Dec +51.5°)</option>
+            <option value="kaus_australis">50. Kaus Australis (SHA 83.9° / Dec -34.4°)</option>
+            <option value="vega">51. Vega (SHA 96.4° / Dec +38.8°)</option>
+            <option value="nunki">52. Nunki (SHA 76.1° / Dec -26.3°)</option>
+            <option value="altair">53. Altair (SHA 62.1° / Dec +8.9°)</option>
+            <option value="peacock">54. Peacock (SHA 53.2° / Dec -56.7°)</option>
+            <option value="deneb">55. Deneb (SHA 49.3° / Dec +45.3°)</option>
+            <option value="enif">56. Enif (SHA 33.9° / Dec +9.9°)</option>
+            <option value="fomalhaut">57. Fomalhaut (SHA 15.3° / Dec -29.6°)</option>
         </optgroup>
     </select>
 
@@ -196,17 +242,65 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
+    // COMPLETE 57 SELECTED NAVIGATIONAL STARS DATABASE ARRAY
     const starDatabase = {
-        sirius: { name: "Sirius", sha: 258.4, dec: -16.7 },
-        canopus: { name: "Canopus", sha: 263.9, dec: -52.7 },
-        rigel: { name: "Rigel", sha: 281.1, dec: -8.2 },
+        alpheratz: { name: "Alpheratz", sha: 357.6, dec: 29.2 },
+        ankaa: { name: "Ankaa", sha: 353.0, dec: -42.2 },
+        schedar: { name: "Schedar", sha: 349.3, dec: 56.6 },
+        diphda: { name: "Diphda", sha: 349.1, dec: -18.0 },
         achernar: { name: "Achernar", sha: 335.3, dec: -57.2 },
-        vega: { name: "Vega", sha: 96.4, dec: 38.8 },
-        arcturus: { name: "Arcturus", sha: 145.9, dec: 19.1 },
+        hamal: { name: "Hamal", sha: 327.9, dec: 23.5 },
+        akarnar: { name: "Acamar", sha: 315.2, dec: -40.3 },
+        menkar: { name: "Menkar", sha: 314.1, dec: 4.1 },
+        mirfak: { name: "Mirfak", sha: 308.7, dec: 49.9 },
         aldebaran: { name: "Aldebaran", sha: 290.9, dec: 16.5 },
-        antares: { name: "Antares", sha: 112.3, dec: -26.4 },
+        rigel: { name: "Rigel", sha: 281.1, dec: -8.2 },
+        capella: { name: "Capella", sha: 280.6, dec: 46.0 },
+        bellatrix: { name: "Bellatrix", sha: 278.3, dec: 6.4 },
+        elnath: { name: "Elnath", sha: 278.1, dec: 28.6 },
+        alnilam: { name: "Alnilam", sha: 275.8, dec: -1.2 },
+        betelgeuse: { name: "Betelgeuse", sha: 271.0, dec: 7.4 },
+        canopus: { name: "Canopus", sha: 263.9, dec: -52.7 },
+        sirius: { name: "Sirius", sha: 258.4, dec: -16.7 },
+        adhara: { name: "Adhara", sha: 255.4, dec: -29.0 },
+        procyon: { name: "Procyon", sha: 245.0, dec: 5.2 },
+        pollux: { name: "Pollux", sha: 243.4, dec: 28.0 },
+        avior: { name: "Avior", sha: 234.2, dec: -59.5 },
+        suhail: { name: "Suhail", sha: 222.9, dec: -43.4 },
+        miaplacidus: { name: "Miaplacidus", sha: 221.4, dec: -69.8 },
+        alphard: { name: "Alphard", sha: 218.0, dec: -8.7 },
+        regulus: { name: "Regulus", sha: 207.8, dec: 12.0 },
+        algieba: { name: "Algieba", sha: 205.7, dec: 19.8 },
+        merak: { name: "Merak", sha: 182.1, dec: 56.3 },
+        dubhe: { name: "Dubhe", sha: 193.9, dec: 61.7 },
+        denebola: { name: "Denebola", sha: 182.6, dec: 14.6 },
+        gienah: { name: "Gienah", sha: 175.9, dec: -17.5 },
+        acrux: { name: "Acrux", sha: 173.2, dec: -63.2 },
+        gacrux: { name: "Gacrux", sha: 172.1, dec: -57.2 },
+        alioth: { name: "Alioth", sha: 166.4, dec: 56.0 },
         spica: { name: "Spica", sha: 158.4, dec: -11.2 },
-        pollux: { name: "Pollux", sha: 243.4, dec: 28.0 }
+        alcaid: { name: "Alkaid", sha: 153.0, dec: 49.3 },
+        hadar: { name: "Hadar", sha: 148.8, dec: -60.4 },
+        menkent: { name: "Menkent", sha: 148.1, dec: -36.4 },
+        arcturus: { name: "Arcturus", sha: 145.9, dec: 19.1 },
+        rigil_kent: { name: "Rigil Kentaurus", sha: 139.9, dec: -60.8 },
+        zubenelgenubi: { name: "Zubenelgenubi", sha: 137.1, dec: -16.1 },
+        kochab: { name: "Kochab", sha: 137.3, dec: 74.2 },
+        alphecca: { name: "Alphecca", sha: 126.1, dec: 26.7 },
+        antares: { name: "Antares", sha: 112.3, dec: -26.4 },
+        atria: { name: "Atria", sha: 107.2, dec: -69.0 },
+        sabik: { name: "Sabik", sha: 102.2, dec: -15.7 },
+        shaula: { name: "Shaula", sha: 96.4, dec: -37.1 },
+        rasalhague: { name: "Rasalhague", sha: 96.1, dec: 12.6 },
+        etamin: { name: "Eltanin", sha: 90.1, dec: 51.5 },
+        kaus_australis: { name: "Kaus Australis", sha: 83.9, dec: -34.4 },
+        vega: { name: "Vega", sha: 96.4, dec: 38.8 },
+        nunki: { name: "Nunki", sha: 76.1, dec: -26.3 },
+        altair: { name: "Altair", sha: 62.1, dec: 8.9 },
+        peacock: { name: "Peacock", sha: 53.2, dec: -56.7 },
+        deneb: { name: "Deneb", sha: 49.3, dec: 45.3 },
+        enif: { name: "Enif", sha: 33.9, dec: 9.9 },
+        fomalhaut: { name: "Fomalhaut", sha: 15.3, dec: -29.6 }
     };
 
     let globalLogData = {}; 
@@ -242,29 +336,21 @@
     }
 
     function triggerPrintFriendlyEngine() {
-        if (!globalLogData.zn) {
-            alert("⚠️ Paki-pindot muna ang 'CALCULATE LOP' bago mag-print.");
-            return;
-        }
-        // Pinipilit ang Leaflet map na i-refresh ang tiles nito bago magbukas ang browser layout print out
+        if (!globalLogData.zn) { alert("⚠️ Paki-pindot muna ang 'CALCULATE LOP'."); return; }
         map.invalidateSize();
-        setTimeout(function() {
-            window.print();
-        }, 300);
+        setTimeout(function() { window.print(); }, 300);
     }
 
     function performFullCelestialCalculation() {
         let latDeg = parseFloat(document.getElementById('latDeg').value) || 0;
         let latMin = parseFloat(document.getElementById('latMin').value) || 0;
         let latDir = document.getElementById('latDir').value;
-        let lat = latDeg + (latMin / 60);
-        if(latDir === 'S') lat = -lat;
+        let lat = latDeg + (latMin / 60); if(latDir === 'S') lat = -lat;
 
         let lonDeg = parseFloat(document.getElementById('lonDeg').value) || 0;
         let lonMin = parseFloat(document.getElementById('lonMin').value) || 0;
         let lonDir = document.getElementById('lonDir').value;
-        let lon = lonDeg + (lonMin / 60);
-        if(lonDir === 'W') lon = -lon;
+        let lon = lonDeg + (lonMin / 60); if(lonDir === 'W') lon = -lon;
 
         let selectedBody = document.getElementById('bodySelect').value;
         let baseGha = 48.55; let dec = 18.22; let shaStr = "N/A (Core Body)"; let incVal = "0.00° (Auto)";
@@ -280,8 +366,7 @@
         let hsDeg = parseFloat(document.getElementById('hsDeg').value) || 0;
         let hsMin = parseFloat(document.getElementById('hsMin').value) || 0;
         let hs = hsDeg + (hsMin / 60);
-        let ieVal = parseFloat(document.getElementById('ie').value) || 0;
-        let ie = ieVal / 60;
+        let ieVal = parseFloat(document.getElementById('ie').value) || 0; let ie = ieVal / 60;
         let hoe = parseFloat(document.getElementById('hoe').value) || 0;
         let dip = (1.76 * Math.sqrt(hoe)) / 60; 
         let ha = hs + ie - dip; let ho = ha + (15.5 / 60);
@@ -363,10 +448,7 @@
         let lopX2 = itpLat - (lopLengthDeg * Math.cos(lopBearingRad));
         let lopY2 = itpLon - ((lopLengthDeg * Math.sin(lopBearingRad)) / Math.cos(itpLat * Math.PI / 180));
 
-        L.polyline([[lopX1, lopY1], [lopX2, lopY2]], {
-            color: '#38BDF8', weight: 4
-        }).addTo(mapLayerGroup);
-        
+        L.polyline([[lopX1, lopY1], [lopX2, lopY2]], { color: '#38BDF8', weight: 4 }).addTo(mapLayerGroup);
         map.invalidateSize();
     }
 
