@@ -21,11 +21,8 @@
         .result-line { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #1E293B; font-size: 15px; }
         .highlight { font-weight: bold; color: #F59E0B; }
         canvas { background-color: #111827; border: 1px solid #374151; width: 100%; height: 350px; margin-top: 15px; border-radius: 8px; }
-        
-        /* DEVELOPER FOOTER CREDITS STYLE */
         .dev-footer { text-align: center; margin-top: 30px; padding-top: 15px; border-top: 1px solid #334155; font-size: 12px; color: #64748B; }
         .dev-name { color: #F59E0B; font-weight: bold; font-size: 14px; letter-spacing: 0.5px; margin-top: 3px; }
-
         @media print {
             body { background-color: white; color: black; }
             .container { box-shadow: none; background-color: white; width: 100%; max-width: 100%; padding: 0; }
@@ -158,14 +155,14 @@
     <div class="result-box" id="resultBox">
         <h2>📊 Calculation Output</h2>
         <div class="result-line"><span>True Altitude (Ho):</span><span id="outHo" class="highlight">-</span></div>
-        <div class="result-line"><span>GHA (Fetched Online):</span><span id="outGHA">-</span></div>
+        <div class="result-line"><span>Greenwich Hour Angle (GHA):</span><span id="outGHA">-</span></div>
         <div class="result-line"><span>Declination (Dec):</span><span id="outDec">-</span></div>
-        <div class="result-line"><span>Assumed Hour Angle (LHA):</span><span id="outLHA">-</span></div>
+        <div class="result-line"><span>Local Hour Angle (LHA):</span><span id="outLHA">-</span></div>
         
         <h3>📝 ABC Table Breakdown</h3>
-        <div class="result-line"><span>A Value:</span><span id="outA">-</span></div>
-        <div class="result-line"><span>B Value:</span><span id="outB">-</span></div>
-        <div class="result-line"><span>C Value:</span><span id="outC" class="highlight">-</span></div>
+        <div class="result-line"><span>A Value [tan(Lat)/tan(LHA)]:</span><span id="outA">-</span></div>
+        <div class="result-line"><span>B Value [tan(Dec)/sin(LHA)]:</span><span id="outB">-</span></div>
+        <div class="result-line"><span>C Value (Combined A ± B):</span><span id="outC" class="highlight">-</span></div>
         
         <h3>🎯 Final Intercept & Azimuth</h3>
         <div class="result-line"><span>Calculated Altitude (Hc):</span><span id="outHc">-</span></div>
@@ -201,7 +198,7 @@
         pollux: { name: "Pollux", sha: 243.4, dec: 28.0 }
     };
 
-    let globalLogData = {};
+    let globalLogData = {}; // Lagayan ng kumpletong data para sa file print out
 
     function calculateUTC() {
         const localInput = document.getElementById('localTime').value;
@@ -228,8 +225,15 @@
     function performFullCelestialCalculation() {
         let latDeg = parseFloat(document.getElementById('latDeg').value) || 0;
         let latMin = parseFloat(document.getElementById('latMin').value) || 0;
+        let latDir = document.getElementById('latDir').value;
         let lat = latDeg + (latMin / 60);
-        if(document.getElementById('latDir').value === 'S') lat = -lat;
+        if(latDir === 'S') lat = -lat;
+
+        let lonDeg = parseFloat(document.getElementById('lonDeg').value) || 0;
+        let lonMin = parseFloat(document.getElementById('lonMin').value) || 0;
+        let lonDir = document.getElementById('lonDir').value;
+        let lon = lonDeg + (lonMin / 60);
+        if(lonDir === 'W') lon = -lon;
 
         let selectedBody = document.getElementById('bodySelect').value;
         let gha = 48.55; 
@@ -240,17 +244,16 @@
             let ghaAries = 150.25; 
             gha = (ghaAries + starDatabase[selectedBody].sha) % 360;
         }
-        
-        let lonDeg = parseFloat(document.getElementById('lonDeg').value) || 0;
-        let lonMin = parseFloat(document.getElementById('lonMin').value) || 0;
-        let lon = lonDeg + (lonMin / 60);
-        if(document.getElementById('lonDir').value === 'W') lon = -lon;
 
         let lha = gha + lon;
         if (lha < 0) lha += 360;
         lha = lha % 360;
 
-        let hs = (parseFloat(document.getElementById('hsDeg').value)||0) + ((parseFloat(document.getElementById('hsMin').value)||0)/60);
+        // Sextant breakdown corrections
+        let hsDeg = parseFloat(document.getElementById('hsDeg').value) || 0;
+        let hsMin = parseFloat(document.getElementById('hsMin').value) || 0;
+        let hs = hsDeg + (hsMin / 60);
+        
         let ie = (parseFloat(document.getElementById('ie').value) || 0) / 60;
         let hoe = parseFloat(document.getElementById('hoe').value) || 0;
         let dip = (1.76 * Math.sqrt(hoe)) / 60; 
@@ -296,20 +299,36 @@
         drawPlottingChart(zn, interceptMinutes);
         drawSkyMap(lat, selectedBody, zn, hc);
 
+        // KINUMPLETONG MGA IMPORMASYON PARA WALANG REKLAMO ANG INSPECTOR
         globalLogData = {
             vessel: document.getElementById('vesselName').value || "N/A",
             voyage: document.getElementById('voyageNo').value || "N/A",
             oow: document.getElementById('oowName').value || "N/A",
             remarks: document.getElementById('remarks').value || "N/A",
-            target: starDatabase[selectedBody] ? starDatabase[selectedBody].name : selectedBody.toUpperCase(),
+            localTime: document.getElementById('localTime').value,
+            zd: document.getElementById('zd').value,
             utc: document.getElementById('utcTime').value,
-            ap: `${latDeg}°${latMin}'${document.getElementById('latDir').value} / ${lonDeg}°${lonMin}'${document.getElementById('lonDir').value}`,
-            ho: ho.toFixed(4) + "°",
+            
+            // Raw Inputs
+            target: starDatabase[selectedBody] ? starDatabase[selectedBody].name : selectedBody.toUpperCase(),
+            apLat: `${latDeg}° ${latMin}' ${latDir}`,
+            apLon: `${lonDeg}° ${lonMin}' ${lonDir}`,
+            hsRaw: `${hsDeg}° ${hsMin}'`,
+            ieRaw: document.getElementById('ie').value + " '",
+            hoeRaw: hoe + " meters",
+            dipCalc: (dip * 60).toFixed(2) + " '",
+            
+            // Calcs
             gha: gha.toFixed(2) + "°",
             dec: dec.toFixed(2) + "°",
-            abc: `A: ${A.toFixed(4)} | B: ${B.toFixed(4)} | C: ${C.toFixed(4)}`,
+            lha: lha.toFixed(2) + "°",
+            ho: ho.toFixed(4) + "°",
+            valA: A.toFixed(4),
+            valB: B.toFixed(4),
+            valC: C.toFixed(4),
             hc: hc.toFixed(4) + "°",
             intercept: Math.abs(interceptMinutes).toFixed(1) + " NM " + directionTxt,
+            zAngle: Z.toFixed(1) + "°",
             zn: zn.toFixed(1) + "° True"
         };
     }
@@ -320,35 +339,56 @@
             return;
         }
 
+        // KUMPLETONG TEMPLATE PARA SA ULTIMATE SHIP LOG RECORD
         let fileContent = `==================================================\n`;
-        fileContent += `             BMS LOP-CALCULATOR REPORT            \n`;
+        fileContent += `             OFFICIAL LOP-CALCULATOR REPORT       \n`;
         fileContent += `==================================================\n`;
-        fileContent += `System Developer: RENANTE FULLO\n`;
+        fileContent += `SYSTEM DEVELOPER : RENANTE FULLO\n`;
         fileContent += `--------------------------------------------------\n`;
-        fileContent += `Vessel Name : ${globalLogData.vessel}\n`;
-        fileContent += `Voyage No   : ${globalLogData.voyage}\n`;
-        fileContent += `OOW Name    : ${globalLogData.oow}\n`;
-        fileContent += `Remarks     : ${globalLogData.remarks}\n`;
-        fileContent += `Date / UTC  : ${globalLogData.utc}\n`;
+        fileContent += `[VESSEL & VOYAGE METADATA]\n`;
+        fileContent += `Vessel Name      : ${globalLogData.vessel}\n`;
+        fileContent += `Voyage Number    : ${globalLogData.voyage}\n`;
+        fileContent += `Officer on Watch : ${globalLogData.oow}\n`;
+        fileContent += `Remarks/Notes    : ${globalLogData.remarks}\n`;
         fileContent += `--------------------------------------------------\n`;
-        fileContent += `Target Body : ${globalLogData.target}\n`;
-        fileContent += `Assumed Pos : ${globalLogData.ap}\n`;
+        fileContent += `[TIME SETTINGS]\n`;
+        fileContent += `Local Time/Date  : ${globalLogData.localTime}\n`;
+        fileContent += `Zone Description : ZD ${globalLogData.zd}\n`;
+        fileContent += `Greenwich Time   : ${globalLogData.utc}\n`;
         fileContent += `--------------------------------------------------\n`;
-        fileContent += `GHA Fetched : ${globalLogData.gha}\n`;
-        fileContent += `Declination : ${globalLogData.dec}\n`;
-        fileContent += `True Alt(Ho): ${globalLogData.ho}\n`;
+        fileContent += `[ASSUMED POSITION & TARGET]\n`;
+        fileContent += `Target Observed  : ${globalLogData.target}\n`;
+        fileContent += `Assumed Latitude : ${globalLogData.apLat}\n`;
+        fileContent += `Assumed Longitude: ${globalLogData.apLon}\n`;
         fileContent += `--------------------------------------------------\n`;
-        fileContent += `ABC VALUES  : ${globalLogData.abc}\n`;
+        fileContent += `[SEXTANT OBSERVATION & CORRECTIONS]\n`;
+        fileContent += `Sextant Alt (Hs) : ${globalLogData.hsRaw}\n`;
+        fileContent += `Index Error (IE) : ${globalLogData.ieRaw}\n`;
+        fileContent += `Height of Eye    : ${globalLogData.hoeRaw}\n`;
+        fileContent += `Calculated Dip   : -${globalLogData.dipCalc}\n`;
+        fileContent += `True Alt (Ho)    : ${globalLogData.ho}\n`;
         fileContent += `--------------------------------------------------\n`;
-        fileContent += `Calc Alt(Hc): ${globalLogData.hc}\n`;
-        fileContent += `INTERCEPT   : ${globalLogData.intercept}\n`;
-        fileContent += `AZIMUTH (Zn): ${globalLogData.zn}\n`;
+        fileContent += `[ALMANAC & SIGHT DATA]\n`;
+        fileContent += `Greenwich HA(GHA): ${globalLogData.gha}\n`;
+        fileContent += `Declination (Dec): ${globalLogData.dec}\n`;
+        fileContent += `Local HA (LHA)   : ${globalLogData.lha}\n`;
+        fileContent += `--------------------------------------------------\n`;
+        fileContent += `[ABC METHOD BREAKDOWN]\n`;
+        fileContent += `Table A Value    : ${globalLogData.valA}\n`;
+        fileContent += `Table B Value    : ${globalLogData.valB}\n`;
+        fileContent += `Table C Value    : ${globalLogData.valC}\n`;
+        fileContent += `--------------------------------------------------\n`;
+        fileContent += `[FINAL NAVIGATION OUTPUT]\n`;
+        fileContent += `Computed Alt(Hc) : ${globalLogData.hc}\n`;
+        fileContent += `INTERCEPT VALUE  : ${globalLogData.intercept}\n`;
+        fileContent += `Azimuth Angle (Z): ${globalLogData.zAngle}\n`;
+        fileContent += `TRUE AZIMUTH (Zn): ${globalLogData.zn}\n`;
         fileContent += `==================================================\n`;
-        fileContent += `Software Developed by Renante Fullo | Safe Voyage!\n`;
+        fileContent += `Generated via Renante Fullo LOP System v2.6 | Safe Voyage!\n`;
 
         let blob = new Blob([fileContent], { type: "text/plain;charset=utf-8" });
         let link = document.createElement("a");
-        link.download = `LOP_Report_Voy_${globalLogData.voyage.replace(/\s+/g, '_')}.txt`;
+        link.download = `LOP_COMPLETE_Report_Voy_${globalLogData.voyage.replace(/\s+/g, '_')}.txt`;
         link.href = URL.createObjectURL(blob);
         document.body.appendChild(link);
         link.click();
@@ -381,7 +421,6 @@
         ctx.fillStyle = '#38BDF8'; ctx.fillText("LOP", lopX1 - 30, lopY1 - 10);
     }
 
-    // MAP DRAW MODULE
     function drawSkyMap(userLat, targetKey, targetZn, targetHc) {
         const canvas = document.getElementById('skyCanvas');
         const ctx = canvas.getContext('2d');
@@ -394,7 +433,7 @@
         ctx.beginPath(); ctx.arc(cx, cy, radius * 0.33, 0, 2 * Math.PI); ctx.stroke();
         ctx.setLineDash([]); ctx.strokeStyle = '#1E293B'; ctx.beginPath();
         ctx.moveTo(cx - radius, cy); ctx.lineTo(cx + radius, cy); ctx.moveTo(cx, cy - radius); ctx.lineTo(cx, cy + radius); ctx.stroke();
-        ctx.fillStyle = '#64748B'; ctx.font = 'bold 11px Arial'; ctx.fillText("N", cx - 4, cy - radius - 5); ctx.fillText("S", cx - 4, cy + radius + 14); ctx.fillText("E", cx + radius + 6, cy + 4); ctx.fillText("W", cx - radius - 16, cy + 4);
+        ctx.fillStyle = '#64748B'; ctx.font = 'bold 11px Arial'; ctx.fillText("N", cx - 4, cy - radius - 5); ctx.fillText("S", cx - 4, cy + radius + 14); ctx.fillText("E", ctx + radius + 6, cy + 4); ctx.fillText("W", cx - radius - 16, cy + 4);
 
         for (let key in starDatabase) {
             let star = starDatabase[key];
