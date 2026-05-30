@@ -37,48 +37,44 @@
         .dev-footer { text-align: center; margin-top: 30px; padding-top: 15px; border-top: 1px solid #334155; font-size: 12px; color: #64748B; }
         .dev-name { color: #F59E0B; font-weight: bold; font-size: 14px; letter-spacing: 0.5px; margin-top: 3px; }
 
-        /* CRITICAL FIX: HARD OVERRIDE FOR PRINT PREVIEW AND PDF EXPORT */
+        /* PRINT CONFIGURATION - HIGHEST PRIORITY OVERRIDE */
         @media print {
-            /* Force ang buong HTML at Body na hubaran ng dark background */
             html, body { background: #ffffff !important; background-color: #ffffff !important; color: #000000 !important; padding: 0 !important; margin: 0 !important; }
             .container { box-shadow: none !important; background: #ffffff !important; background-color: #ffffff !important; width: 100% !important; max-width: 100% !important; padding: 0 !important; }
             
-            /* Itago ang lahat ng control forms at buttons para malinis */
+            /* Itago ang interactive input forms pero panatilihin ang pangunahing pamagat kung nais */
             button, select, input, label, h1, h3, .sight-card, .btn-secondary { display: none !important; }
             
-            /* Puwersahing pumuti ang mismong main container ng report */
+            /* Ipakita ang Result Box nang malinis at walang itim na gilid */
             .result-box { display: block !important; border: none !important; background: #ffffff !important; background-color: #ffffff !important; color: #000000 !important; padding: 0 !important; margin-top: 0 !important; }
-            .print-title { color: #000000 !important; font-weight: bold !important; }
+            .print-title { color: #000000 !important; font-weight: bold !important; font-size: 20px !important; margin-bottom: 15px !important; text-align: center !important; }
             
-            /* Puti at high-contrast na metadata panel */
+            /* KOMPLETONG METADATA BOX (Dito lalabas lahat ng kailangang detalye ng Voyage) */
             #printMetadata { 
                 display: block !important; 
-                border: 1px solid #94a3b8 !important; 
-                background: #f8fafc !important; 
-                background-color: #f8fafc !important; 
+                border: 2px solid #000000 !important; 
+                background: #ffffff !important; 
+                background-color: #ffffff !important; 
                 color: #000000 !important; 
                 padding: 15px !important; 
                 font-size: 13px !important;
-                line-height: 1.6 !important;
-                border-radius: 6px !important;
+                line-height: 1.8 !important;
+                border-radius: 4px !important;
                 margin-bottom: 20px !important;
             }
-            #printMetadata b { color: #000000 !important; }
+            #printMetadata table { width: 100%; border-collapse: collapse; }
+            #printMetadata td { border: none !important; padding: 4px 8px !important; color: #000000 !important; }
             
-            /* Malinis na data reduction table */
+            /* High-contrast data reduction table */
             .result-table { width: 100% !important; background-color: #ffffff !important; color: #000000 !important; margin-top: 15px !important; }
-            .result-table th, .result-table td { border: 1px solid #64748b !important; color: #000000 !important; padding: 8px !important; background: none !important; }
-            
-            /* Table header color override */
+            .result-table th, .result-table td { border: 1px solid #000000 !important; color: #000000 !important; padding: 8px !important; background: none !important; }
             .result-table th { background-color: #e2e8f0 !important; color: #000000 !important; font-weight: bold !important; }
+            .result-table td b, .result-table td span { color: #000000 !important; }
             
-            /* Force override para sa mga dynamic inline colored texts ng cells */
-            .result-table td, .result-table td b, .result-table td span { color: #000000 !important; }
+            /* Map integration layout */
+            #map { display: block !important; height: 380px !important; border: 1px solid #000000 !important; page-break-inside: avoid; margin-top: 20px !important; background-color: #ffffff !important; }
             
-            /* Map block protection */
-            #map { display: block !important; height: 380px !important; border: 1px solid #64748b !important; page-break-inside: avoid; margin-top: 20px !important; background-color: #ffffff !important; }
-            
-            .dev-footer { color: #475569 !important; border-top: 1px solid #94a3b8 !important; margin-top: 40px !important; }
+            .dev-footer { color: #000000 !important; border-top: 1px solid #000000 !important; margin-top: 30px !important; }
             .dev-name { color: #000000 !important; font-weight: bold !important; }
         }
     </style>
@@ -86,7 +82,7 @@
 <body>
 
 <div class="container">
-    <h1>⚓ 3-SIGHT CELESTIAL FIX ENGINE <span style="font-size:12px; color:#10B981; vertical-align:middle;">[ULTIMATE LOG v3.52]</span></h1>
+    <h1>⚓ 3-SIGHT CELESTIAL FIX ENGINE <span style="font-size:12px; color:#10B981; vertical-align:middle;">[ULTIMATE LOG v3.53]</span></h1>
 
     <h3>📝 Vessel Voyage Log</h3>
     <div class="grid-2">
@@ -197,7 +193,7 @@
     </div>
 
     <div class="result-box" id="resultBox">
-        <h2 style="color: #38BDF8; margin-top: 0;" class="print-title">📊 Automated Sight Reduction Report</h2>
+        <h2 class="print-title">📊 Automated Sight Reduction Report</h2>
         
         <div id="printMetadata"></div>
         
@@ -321,11 +317,29 @@
         let dip = (1.76 * Math.sqrt(hoe)) / 60;
         L.marker([apLat, apLon]).addTo(mapLayerGroup).bindPopup("<b>🌐 Assumed Position (AP)</b>").openPopup();
         
-        // BUILD PRINT LIGHT PANEL
-        let metaHtml = `<b>VESSEL:</b> ${vessel} &nbsp;|&nbsp; <b>VOYAGE:</b> ${voyage} &nbsp;|&nbsp; <b>OOW:</b> ${oow}<br>
-                        <b>LOCAL DATE/TIME:</b> ${localTime} (ZD: ${zd}) &nbsp;|&nbsp; <b>UTC TIME:</b> ${utcDate.toUTCString()}<br>
-                        <b>ASSUMED POSITION:</b> LAT ${latD}°${latM}'${latDir} , LON ${lonD}°${lonM}'${lonDir} &nbsp;|&nbsp; <b>HEIGHT OF EYE:</b> ${hoe}m (Dip: -${(dip*60).toFixed(1)}')<br>
-                        <b>REMARKS:</b> ${remarks}`;
+        // DYNAMIC TABLE BUILDER FOR PRINT METADATA BOX (Para malinis at kompleto)
+        let metaHtml = `
+            <table>
+                <tr>
+                    <td><b>Vessel Name:</b> ${vessel}</td>
+                    <td><b>Voyage Number:</b> ${voyage}</td>
+                    <td><b>Officer on Watch:</b> ${oow}</td>
+                </tr>
+                <tr>
+                    <td><b>Local Date/Time:</b> ${localTime.replace("T", " ")}</td>
+                    <td><b>Zone Description (ZD):</b> ${zd >= 0 ? '+' : ''}${zd}</td>
+                    <td><b>Calculated UTC:</b> ${utcDate.toUTCString()}</td>
+                </tr>
+                <tr>
+                    <td><b>Assumed Position:</b> LAT ${latD}° ${latM}' ${latDir} , LON ${lonD}° ${lonM}' ${lonDir}</td>
+                    <td><b>Height of Eye:</b> ${hoe} meters</td>
+                    <td><b>Dip Correction:</b> -${(dip*60).toFixed(1)}'</td>
+                </tr>
+                <tr>
+                    <td colspan="3"><b>Remarks / Environment:</b> ${remarks}</td>
+                </tr>
+            </table>
+        `;
         let metaPrintBlock = document.getElementById('printMetadata');
         metaPrintBlock.innerHTML = metaHtml;
         metaPrintBlock.style.display = "block";
@@ -369,7 +383,6 @@
             
             let intercept = (ho - hc) * 60; let dirTxt = intercept >= 0 ? "TOWARDS" : "AWAY";
             
-            // Note: the colors style is preserved for normal browser layout, but completely blocked by print stylesheet overrides
             tbody.innerHTML += `<tr>
                 <td><b>Sight ${i}</b></td>
                 <td><b>${data.name}</b></td>
@@ -399,7 +412,7 @@
             
             plotLopVector(apLat, apLon, zn, intercept, colors[i-1], data.name);
         }
-        globalTxtData += `\nGenerated Engine v3.52 | Developer: 2/O Renante Fullo | Marine Solutions 2026\n`;
+        globalTxtData += `\nGenerated Engine v3.53 | Developer: 2/O Renante Fullo | Marine Solutions 2026\n`;
         document.getElementById('resultBox').style.display = "block";
         map.setView([apLat, apLon], 8); map.invalidateSize();
     }
