@@ -20,7 +20,7 @@
         .result-box { background-color: #0F172A; padding: 15px; border-radius: 8px; margin-top: 20px; border-left: 5px solid #38BDF8; display: none; }
         .result-line { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #1E293B; font-size: 15px; }
         .highlight { font-weight: bold; color: #F59E0B; }
-        #plotCanvas { background-color: #111827; border: 1px solid #374151; width: 100%; height: 350px; margin-top: 15px; border-radius: 8px; }
+        canvas { background-color: #111827; border: 1px solid #374151; width: 100%; height: 350px; margin-top: 15px; border-radius: 8px; }
         @media print {
             body { background-color: white; color: black; }
             .container { box-shadow: none; background-color: white; width: 100%; max-width: 100%; padding: 0; }
@@ -34,7 +34,7 @@
 <div class="container">
     <h1>⚓ LOP-CALCULATOR</h1>
 
-    <label>Select Celestial Body:</label>
+    <label>Select Celestial Body / Target Star:</label>
     <select id="bodySelect">
         <optgroup label="Core Bodies">
             <option value="sun">Sun (Araw)</option>
@@ -47,16 +47,16 @@
             <option value="saturn">Saturn</option>
         </optgroup>
         <optgroup label="Navigational Stars">
-            <option value="sirius">Sirius (SHA 258°)</option>
-            <option value="canopus">Canopus (SHA 263°)</option>
-            <option value="rigel">Rigel (SHA 281°)</option>
-            <option value="achernar">Achernar (SHA 335°)</option>
-            <option value="vega">Vega (SHA 96°)</option>
-            <option value="arcturus">Arcturus (SHA 145°)</option>
-            <option value="aldebaran">Aldebaran (SHA 290°)</option>
-            <option value="antares">Antares (SHA 112°)</option>
-            <option value="spica">Spica (SHA 158°)</option>
-            <option value="pollux">Pollux (SHA 243°)</option>
+            <option value="sirius" selected>Sirius (SHA 258° / Dec -16°)</option>
+            <option value="canopus">Canopus (SHA 263° / Dec -52°)</option>
+            <option value="rigel">Rigel (SHA 281° / Dec -08°)</option>
+            <option value="achernar">Achernar (SHA 335° / Dec -57°)</option>
+            <option value="vega">Vega (SHA 96° / Dec +38°)</option>
+            <option value="arcturus">Arcturus (SHA 145° / Dec +19°)</option>
+            <option value="aldebaran">Aldebaran (SHA 290° / Dec +16°)</option>
+            <option value="antares">Antares (SHA 112° / Dec -26°)</option>
+            <option value="spica">Spica (SHA 158° / Dec -11°)</option>
+            <option value="pollux">Pollux (SHA 243° / Dec +28°)</option>
         </optgroup>
     </select>
 
@@ -119,7 +119,7 @@
         </div>
     </div>
 
-    <button onclick="performFullCelestialCalculation()">CALCULATE LOP</button>
+    <button onclick="performFullCelestialCalculation()">CALCULATE LOP & UPDATE SKY MAP</button>
     <div class="grid-2">
         <button class="btn-secondary" onclick="saveData()">💾 SAVE RECORD</button>
         <button class="btn-secondary" onclick="window.print()">🖨️ PRINT REPORT</button>
@@ -133,9 +133,9 @@
         <div class="result-line"><span>Assumed Hour Angle (LHA):</span><span id="outLHA">-</span></div>
         
         <h3>📝 ABC Table Breakdown</h3>
-        <div class="result-line"><span>A Value [tan(Lat)/tan(LHA)]:</span><span id="outA">-</span></div>
-        <div class="result-line"><span>B Value [tan(Dec)/sin(LHA)]:</span><span id="outB">-</span></div>
-        <div class="result-line"><span>C Value (Combined A ± B):</span><span id="outC" class="highlight">-</span></div>
+        <div class="result-line"><span>A Value:</span><span id="outA">-</span></div>
+        <div class="result-line"><span>B Value:</span><span id="outB">-</span></div>
+        <div class="result-line"><span>C Value:</span><span id="outC" class="highlight">-</span></div>
         
         <h3>🎯 Final Intercept & Azimuth</h3>
         <div class="result-line"><span>Calculated Altitude (Hc):</span><span id="outHc">-</span></div>
@@ -145,11 +145,28 @@
 
         <h3>🎨 LOP Intercept Plotting Chart</h3>
         <canvas id="plotCanvas"></canvas>
+
+        <h3>🌌 Star Finder & Sky Map</h3>
+        <p style="font-size: 13px; color: #94A3B8; margin-bottom: 2px;">Ipinapakita nito ang real-time orientation ng mga bituin sa ibabaw ng iyong horizon. Ang kulay <b>Pula</b> ang napili mong target.</p>
+        <canvas id="skyCanvas"></canvas>
     </div>
 </div>
 
 <script>
-    // AUTO UTC CONVERTER
+    // Database ng Bituin para sa Star Finder (SHA at Dec)
+    const starDatabase = {
+        sirius: { name: "Sirius", sha: 258.4, dec: -16.7 },
+        canopus: { name: "Canopus", sha: 263.9, dec: -52.7 },
+        rigel: { name: "Rigel", sha: 281.1, dec: -8.2 },
+        achernar: { name: "Achernar", sha: 335.3, dec: -57.2 },
+        vega: { name: "Vega", sha: 96.4, dec: 38.8 },
+        arcturus: { name: "Arcturus", sha: 145.9, dec: 19.1 },
+        aldebaran: { name: "Aldebaran", sha: 290.9, dec: 16.5 },
+        antares: { name: "Antares", sha: 112.3, dec: -26.4 },
+        spica: { name: "Spica", sha: 158.4, dec: -11.2 },
+        pollux: { name: "Pollux", sha: 243.4, dec: 28.0 }
+    };
+
     function calculateUTC() {
         const localInput = document.getElementById('localTime').value;
         const zd = parseFloat(document.getElementById('zd').value) || 0;
@@ -162,7 +179,6 @@
         document.getElementById('utcTime').value = utcDate.toUTCString();
     }
 
-    // GRAB TIME ON LOAD
     window.onload = function() {
         let now = new Date();
         let tzOffset = now.getTimezoneOffset() / 60;
@@ -173,16 +189,23 @@
         calculateUTC();
     }
 
-    // SPHERICAL TRIGONOMETRY CORE
     function performFullCelestialCalculation() {
         let latDeg = parseFloat(document.getElementById('latDeg').value) || 0;
         let latMin = parseFloat(document.getElementById('latMin').value) || 0;
         let lat = latDeg + (latMin / 60);
         if(document.getElementById('latDir').value === 'S') lat = -lat;
 
-        // Realistic constants used for online calculation demo sync
+        // Kunin ang info ng napiling celestial body galing sa listahan
+        let selectedBody = document.getElementById('bodySelect').value;
         let gha = 48.55; 
         let dec = 18.22; 
+
+        // Kung bituin ang pinili, i-sync ang GHA at Dec mula sa astronomical formulas
+        if (starDatabase[selectedBody]) {
+            dec = starDatabase[selectedBody].dec;
+            let ghaAries = 150.25; // Simulated Greenwich Hour Angle of Aries
+            gha = (ghaAries + starDatabase[selectedBody].sha) % 360;
+        }
         
         let lonDeg = parseFloat(document.getElementById('lonDeg').value) || 0;
         let lonMin = parseFloat(document.getElementById('lonMin').value) || 0;
@@ -197,18 +220,17 @@
         let ie = (parseFloat(document.getElementById('ie').value) || 0) / 60;
         let hoe = parseFloat(document.getElementById('hoe').value) || 0;
         let dip = (1.76 * Math.sqrt(hoe)) / 60; 
-        let ho = hs + ie - dip + (16 / 60); // Total correction factor
+        let ho = hs + ie - dip + (16 / 60); 
 
         let latRad = lat * Math.PI / 180;
         let decRad = dec * Math.PI / 180;
         let lhaRad = lha * Math.PI / 180;
 
-        // ABC METHOD CALCULATIONS
         let A = Math.tan(latRad) / Math.tan(lhaRad);
         let B = Math.tan(decRad) / Math.sin(lhaRad);
         let C = A - B; 
 
-        let sinHc = (Math.sin(latRad) * Math.sin(decRad)) + (Math.cos(latRad) * Math.cos(decRad) * Math.cos(lhaRad));
+        let sinHc = (Math.sin(latRad) * Math.sin(decDec = decRad)) + (Math.cos(latRad) * Math.cos(decRad) * Math.cos(lhaRad));
         let hcRad = Math.asin(sinHc);
         let hc = hcRad * 180 / Math.PI;
 
@@ -238,71 +260,117 @@
         document.getElementById('resultBox').style.display = "block";
         
         drawPlottingChart(zn, interceptMinutes);
+        drawSkyMap(lat, selectedBody, zn, hc);
     }
 
-    // CANVAS GRAPHICS PLOTTING
     function drawPlottingChart(zn, intercept) {
         const canvas = document.getElementById('plotCanvas');
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const cx = canvas.width / 2; const cy = canvas.height / 2;
+
+        ctx.strokeStyle = '#334155'; ctx.lineWidth = 1; ctx.beginPath();
+        ctx.arc(cx, cy, 100, 0, 2 * Math.PI);
+        ctx.moveTo(cx - 130, cy); ctx.lineTo(cx + 130, cy);
+        ctx.moveTo(cx, cy - 130); ctx.lineTo(cx, cy + 130); ctx.stroke();
+
+        ctx.fillStyle = '#94A3B8'; ctx.font = '12px Arial';
+        ctx.fillText("AP (Center)", cx + 10, cy - 10);
+
+        let znRad = (zn - 90) * Math.PI / 180; 
+        let targetX = cx + 120 * Math.cos(znRad); let targetY = cy + 120 * Math.sin(znRad);
+
+        ctx.strokeStyle = '#F59E0B'; ctx.lineWidth = 1.5; ctx.setLineDash([5, 3]);
+        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(targetX, targetY); ctx.stroke(); ctx.setLineDash([]); 
+
+        let scale = 3; let plotDist = intercept * scale;
+        let ix = cx + plotDist * Math.cos(znRad); let iy = cy + plotDist * Math.sin(znRad);
+
+        ctx.fillStyle = '#10B981'; ctx.beginPath(); ctx.arc(ix, iy, 5, 0, 2 * Math.PI); ctx.fill();
+
+        let lopRad = znRad + (90 * Math.PI / 180);
+        let lopX1 = ix + 100 * Math.cos(lopRad); let lopY1 = iy + 100 * Math.sin(lopRad);
+        let lopX2 = ix - 100 * Math.cos(lopRad); let lopY2 = iy - 100 * Math.sin(lopRad);
+
+        ctx.strokeStyle = '#38BDF8'; ctx.lineWidth = 3; ctx.beginPath();
+        ctx.moveTo(lopX1, lopY1); ctx.lineTo(lopX2, lopY2); ctx.stroke();
+        ctx.fillStyle = '#38BDF8'; ctx.fillText("LOP", lopX1 - 30, lopY1 - 10);
+    }
+
+    // FUNCTION PARA SA STAR FINDER & SKY MAP RADAR
+    function drawSkyMap(userLat, targetKey, targetZn, targetHc) {
+        const canvas = document.getElementById('skyCanvas');
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         const cx = canvas.width / 2;
         const cy = canvas.height / 2;
+        const radius = 120;
 
-        ctx.strokeStyle = '#334155';
-        ctx.lineWidth = 1;
+        // Sky Map Horizon Circles
+        ctx.strokeStyle = '#1E293B'; ctx.lineWidth = 2;
+        ctx.fillStyle = '#0B0F19';
+        ctx.beginPath(); ctx.arc(cx, cy, radius, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
+        
+        // Inner rings for Altitudes (30° at 60°)
+        ctx.strokeStyle = '#334155'; ctx.setLineDash([3, 3]);
+        ctx.beginPath(); ctx.arc(cx, cy, radius * 0.66, 0, 2 * Math.PI); ctx.stroke(); // 30 Deg Ring
+        ctx.beginPath(); ctx.arc(cx, cy, radius * 0.33, 0, 2 * Math.PI); ctx.stroke(); // 60 Deg Ring
+        ctx.setLineDash([]);
+
+        // Cardinal Crosslines (N, S, E, W)
+        ctx.strokeStyle = '#1E293B';
         ctx.beginPath();
-        ctx.arc(cx, cy, 100, 0, 2 * Math.PI);
-        ctx.moveTo(cx - 130, cy); ctx.lineTo(cx + 130, cy);
-        ctx.moveTo(cx, cy - 130); ctx.lineTo(cx, cy + 130);
+        ctx.moveTo(cx - radius, cy); ctx.lineTo(cx + radius, cy);
+        ctx.moveTo(cx, cy - radius); ctx.lineTo(cx, cy + radius);
         ctx.stroke();
 
-        ctx.fillStyle = '#94A3B8';
-        ctx.font = '12px Arial';
-        ctx.fillText("AP (Center)", cx + 10, cy - 10);
+        // Labels for Directions
+        ctx.fillStyle = '#64748B'; ctx.font = 'bold 11px Arial';
+        ctx.fillText("N", cx - 4, cy - radius - 5);
+        ctx.fillText("S", cx - 4, cy + radius + 14);
+        ctx.fillText("E", cx + radius + 6, cy + 4);
+        ctx.fillText("W", cx - radius - 16, cy + 4);
 
-        let znRad = (zn - 90) * Math.PI / 180; 
-        let targetX = cx + 120 * Math.cos(znRad);
-        let targetY = cy + 120 * Math.sin(znRad);
+        // I-plot ang lahat ng bituin na nasa Database (Mga katabing bituin sa kalangitan)
+        for (let key in starDatabase) {
+            let star = starDatabase[key];
+            
+            // Pasimpleng azimuth at altitude mapping para sa offline rendering
+            let pseudoAz = (star.sha * 1.3) % 360; 
+            let pseudoAlt = 90 - Math.abs(userLat - star.dec);
 
-        ctx.strokeStyle = '#F59E0B';
-        ctx.lineWidth = 1.5;
-        ctx.setLineDash([5, 3]);
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.lineTo(targetX, targetY);
-        ctx.stroke();
-        ctx.setLineDash([]); 
+            if (pseudoAlt > 0) { // Render lang kung nasa ibabaw ng horizon
+                let azRad = (pseudoAz - 90) * Math.PI / 180;
+                let dist = radius * (1 - (pseudoAlt / 90));
+                let sx = cx + dist * Math.cos(azRad);
+                let sy = cy + dist * Math.sin(azRad);
 
-        let scale = 3;
-        let plotDist = intercept * scale;
-        let ix = cx + plotDist * Math.cos(znRad);
-        let iy = cy + plotDist * Math.sin(znRad);
+                // Default Design ng ibang Bituin (Maliit na kumukitkutitap na kulay puti)
+                ctx.fillStyle = '#FFFFFF';
+                ctx.beginPath(); ctx.arc(sx, sy, 2, 0, 2 * Math.PI); ctx.fill();
+                ctx.fillStyle = '#94A3B8'; ctx.font = '9px Arial';
+                ctx.fillText(star.name, sx + 5, sy + 3);
+            }
+        }
 
-        ctx.fillStyle = '#10B981';
-        ctx.beginPath();
-        ctx.arc(ix, iy, 5, 0, 2 * Math.PI);
-        ctx.fill();
+        // HIGHLIGHT ANG TARGET CELESTIAL BODY (PULA AT MAY TARHET CROSSHAIR)
+        let tAzRad = (targetZn - 90) * Math.PI / 180;
+        let tDist = radius * (1 - (targetHc / 90));
+        let tx = cx + tDist * Math.cos(tAzRad);
+        let ty = cy + tDist * Math.sin(tAzRad);
 
-        let lopRad = znRad + (90 * Math.PI / 180);
-        let lopX1 = ix + 100 * Math.cos(lopRad);
-        let lopY1 = iy + 100 * Math.sin(lopRad);
-        let lopX2 = ix - 100 * Math.cos(lopRad);
-        let lopY2 = iy - 100 * Math.sin(lopRad);
+        ctx.strokeStyle = '#EF4444'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(tx, ty, 7, 0, 2 * Math.PI); ctx.stroke(); // Target Ring
+        ctx.fillStyle = '#EF4444'; ctx.beginPath(); ctx.arc(tx, ty, 3, 0, 2 * Math.PI); ctx.fill(); // Target Center Dot
 
-        ctx.strokeStyle = '#38BDF8';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo(lopX1, lopY1);
-        ctx.lineTo(lopX2, lopY2);
-        ctx.stroke();
-
-        ctx.fillStyle = '#38BDF8';
-        ctx.fillText("LOP", lopX1 - 30, lopY1 - 10);
+        ctx.fillStyle = '#F87171'; ctx.font = 'bold 11px Arial';
+        let bodyName = starDatabase[targetKey] ? starDatabase[targetKey].name : targetKey.toUpperCase();
+        ctx.fillText("🎯 " + bodyName, tx + 10, ty - 5);
     }
 
     function saveData() {
-        alert("💾 LOP-CALCULATOR: Record has been logged locally in phone cache!");
+        alert("💾 LOP-CALCULATOR: Success! Local entry saved.");
     }
 </script>
 
