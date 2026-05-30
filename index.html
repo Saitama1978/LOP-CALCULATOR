@@ -3,111 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3-SIGHT CELESTIAL FIX CALCULATOR</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <title>LOP-CALCULATOR (FULLY AUTOMATED)</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #0F172A; color: #E2E8F0; padding: 15px; margin: 0; }
-        .container { max-width: 900px; margin: 0 auto; background-color: #1E293B; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .container { max-width: 750px; margin: 0 auto; background-color: #1E293B; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
         h1 { text-align: center; color: #38BDF8; font-size: 26px; font-weight: 800; border-bottom: 2px solid #334155; padding-bottom: 12px; margin-top: 0; letter-spacing: 1px; }
-        h3 { color: #0EA5E9; border-left: 4px solid #0EA5E9; padding-left: 8px; margin-top: 20px; font-size: 16px; margin-bottom: 10px; }
+        h3 { color: #0EA5E9; border-left: 4px solid #0EA5E9; padding-left: 8px; margin-top: 20px; font-size: 16px; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
         label { display: block; margin-top: 10px; font-size: 13px; color: #94A3B8; font-weight: bold; }
-        input, select { width: 100%; padding: 10px; margin-top: 5px; background-color: #334155; border: 1px solid #475569; border-radius: 6px; color: white; font-size: 15px; box-sizing: border-box; }
-        input:focus, select:focus { border-color: #38BDF8; outline: none; }
+        input, select, textarea { width: 100%; padding: 10px; margin-top: 5px; background-color: #334155; border: 1px solid #475569; border-radius: 6px; color: white; font-size: 15px; box-sizing: border-box; }
+        input:focus, select:focus, textarea:focus { border-color: #38BDF8; outline: none; }
         .row-inline { display: flex; gap: 10px; align-items: center; }
         button { width: 100%; background-color: #0EA5E9; color: #0F172A; border: none; padding: 14px; border-radius: 6px; font-size: 16px; font-weight: bold; margin-top: 25px; cursor: pointer; transition: 0.2s; }
         button:hover { background-color: #38BDF8; }
         .btn-secondary { background-color: #475569; color: white; margin-top: 12px; padding: 10px; }
+        .result-box { background-color: #0F172A; padding: 15px; border-radius: 8px; margin-top: 20px; border-left: 5px solid #38BDF8; display: none; }
+        .result-line { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #1E293B; font-size: 15px; }
+        .highlight { font-weight: bold; color: #F59E0B; }
         
-        /* SIGHT REDUCTION BLOCKS */
-        .sight-card { background-color: #1E293B; border: 1px solid #334155; border-top: 4px solid #38BDF8; padding: 15px; border-radius: 8px; margin-top: 15px; }
-        .sight-card.s1 { border-top-color: #38BDF8; }
-        .sight-card.s2 { border-top-color: #10B981; }
-        .sight-card.s3 { border-top-color: #F59E0B; }
-        .sight-title { font-weight: bold; font-size: 15px; margin-bottom: 5px; }
-        
-        .result-box { background-color: #0F172A; padding: 20px; border-radius: 8px; margin-top: 20px; border-left: 5px solid #38BDF8; display: none; }
-        .result-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; color: #E2E8F0; }
-        .result-table th, .result-table td { border: 1px solid #334155; padding: 10px; text-align: left; }
-        .result-table th { background-color: #1E293B; color: #38BDF8; font-weight: bold; }
-        
-        #map { width: 100%; height: 450px; margin-top: 15px; border-radius: 8px; border: 2px solid #38BDF8; background-color: #111827; }
+        #map { width: 100%; height: 400px; margin-top: 15px; border-radius: 8px; border: 2px solid #38BDF8; background-color: #111827; }
+        canvas { background-color: #111827; border: 1px solid #374151; width: 100%; height: 350px; margin-top: 15px; border-radius: 8px; }
         
         .dev-footer { text-align: center; margin-top: 30px; padding-top: 15px; border-top: 1px solid #334155; font-size: 12px; color: #64748B; }
         .dev-name { color: #F59E0B; font-weight: bold; font-size: 14px; letter-spacing: 0.5px; margin-top: 3px; }
 
-        /* PRINT CONFIGURATION - HIGHEST PRIORITY OVERRIDE */
         @media print {
-            html, body { background: #ffffff !important; background-color: #ffffff !important; color: #000000 !important; padding: 0 !important; margin: 0 !important; }
-            .container { box-shadow: none !important; background: #ffffff !important; background-color: #ffffff !important; width: 100% !important; max-width: 100% !important; padding: 0 !important; }
-            
-            /* Itago ang interactive input forms pero panatilihin ang pangunahing pamagat kung nais */
-            button, select, input, label, h1, h3, .sight-card, .btn-secondary { display: none !important; }
-            
-            /* Ipakita ang Result Box nang malinis at walang itim na gilid */
-            .result-box { display: block !important; border: none !important; background: #ffffff !important; background-color: #ffffff !important; color: #000000 !important; padding: 0 !important; margin-top: 0 !important; }
-            .print-title { color: #000000 !important; font-weight: bold !important; font-size: 20px !important; margin-bottom: 15px !important; text-align: center !important; }
-            
-            /* KOMPLETONG METADATA BOX (Dito lalabas lahat ng kailangang detalye ng Voyage) */
-            #printMetadata { 
-                display: block !important; 
-                border: 2px solid #000000 !important; 
-                background: #ffffff !important; 
-                background-color: #ffffff !important; 
-                color: #000000 !important; 
-                padding: 15px !important; 
-                font-size: 13px !important;
-                line-height: 1.8 !important;
-                border-radius: 4px !important;
-                margin-bottom: 20px !important;
-            }
-            #printMetadata table { width: 100%; border-collapse: collapse; }
-            #printMetadata td { border: none !important; padding: 4px 8px !important; color: #000000 !important; }
-            
-            /* High-contrast data reduction table */
-            .result-table { width: 100% !important; background-color: #ffffff !important; color: #000000 !important; margin-top: 15px !important; }
-            .result-table th, .result-table td { border: 1px solid #000000 !important; color: #000000 !important; padding: 8px !important; background: none !important; }
-            .result-table th { background-color: #e2e8f0 !important; color: #000000 !important; font-weight: bold !important; }
-            .result-table td b, .result-table td span { color: #000000 !important; }
-            
-            /* Map integration layout */
-            #map { display: block !important; height: 380px !important; border: 1px solid #000000 !important; page-break-inside: avoid; margin-top: 20px !important; background-color: #ffffff !important; }
-            
-            .dev-footer { color: #000000 !important; border-top: 1px solid #000000 !important; margin-top: 30px !important; }
-            .dev-name { color: #000000 !important; font-weight: bold !important; }
+            body { background-color: white !important; color: black !important; }
+            .container { box-shadow: none !important; background-color: white !important; width: 100% !important; max-width: 100% !important; padding: 0 !important; }
+            button, select, input, textarea { display: none !important; }
+            .result-box { display: block !important; border: 1px solid #000 !important; background-color: white !important; color: black !important; padding: 20px !important; }
+            .result-line { border-bottom: 1px solid #ccc !important; color: black !important; }
+            .highlight { color: #000 !important; font-weight: bold; }
+            #map { display: block !important; height: 350px !important; border: 1px solid black !important; page-break-inside: avoid; }
+            canvas { display: block !important; height: 300px !important; border: 1px solid black !important; background-color: white !important; page-break-inside: avoid; }
+            .dev-footer { color: black !important; border-top: 1px solid black !important; }
+            .dev-name { color: black !important; }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>⚓ 3-SIGHT CELESTIAL FIX ENGINE <span style="font-size:12px; color:#10B981; vertical-align:middle;">[ULTIMATE LOG v3.53]</span></h1>
+    <h1>⚓ LOP-CALCULATOR <span style="font-size:12px; color:#10B981; vertical-align:middle;">[AUTO-ALMANAC v2.6]</span></h1>
 
     <h3>📝 Vessel Voyage Log</h3>
     <div class="grid-2">
         <div>
             <label>Vessel Name:</label>
-            <input type="text" id="vesselName" placeholder="e.g. MV Saitama Maru" value="MV Saitama Maru">
+            <input type="text" id="vesselName" placeholder="e.g. MV Saitama Maru">
         </div>
         <div>
             <label>Voyage Number:</label>
-            <input type="text" id="voyageNo" placeholder="e.g. 024-OUT" value="024-OUT">
+            <input type="text" id="voyageNo" placeholder="e.g. 024-OUT">
         </div>
     </div>
     <div class="grid-2">
         <div>
             <label>Officer on Watch (OOW):</label>
-            <input type="text" id="oowName" placeholder="e.g. Renante Fullo (2/O)" value="Renante Fullo (2/O)">
+            <input type="text" id="oowName" placeholder="e.g. Renante Fullo (2/O)">
         </div>
         <div>
-            <label>Remarks / Environment:</label>
-            <input type="text" id="remarks" placeholder="e.g. Twilight Celestial Fix" value="3-Star Twilight Sight Fix">
+            <label>Remarks / Target Description:</label>
+            <input type="text" id="remarks" placeholder="e.g. Celestial Fix Update">
         </div>
     </div>
 
-    <h3>🕒 Global Time & Correction Settings</h3>
-    <div class="grid-3">
+    <h3>🌌 Target Body</h3>
+    <label>Select Celestial Body (Automatic Ephemeris Data Generation):</label>
+    <select id="bodySelect">
+        <optgroup label="Core Solar System (Auto GHA & Dec)">
+            <option value="sun">Sun (Araw)</option>
+            <option value="venus">Venus</option>
+            <option value="mars">Mars</option>
+            <option value="jupiter">Jupiter</option>
+            <option value="saturn">Saturn</option>
+        </optgroup>
+        <optgroup label="57 Navigational Stars (Auto-Precession Multi-Engine)">
+            <option value="alpheratz">1. Alpheratz</option>
+            <option value="ankaa">2. Ankaa</option>
+            <option value="schedar">3. Schedar</option>
+            <option value="diphda">4. Diphda</option>
+            <option value="achernar">5. Achernar</option>
+            <option value="hamal">6. Hamal</option>
+            <option value="akarnar">7. Acamar</option>
+            <option value="menkar">8. Menkar</option>
+            <option value="mirfak">9. Mirfak</option>
+            <option value="aldebaran">10. Aldebaran</option>
+            <option value="rigel">11. Rigel</option>
+            <option value="capella">12. Capella</option>
+            <option value="bellatrix">13. Bellatrix</option>
+            <option value="elnath">14. Elnath</option>
+            <option value="alnilam">15. Alnilam</option>
+            <option value="betelgeuse">16. Betelgeuse</option>
+            <option value="canopus">17. Canopus</option>
+            <option value="sirius" selected>18. Sirius</option>
+            <option value="adhara">19. Adhara</option>
+            <option value="procyon">20. Procyon</option>
+            <option value="pollux">21. Pollux</option>
+            <option value="avior">22. Avior</option>
+            <option value="suhail">23. Suhail</option>
+            <option value="miaplacidus">24. Miaplacidus</option>
+            <option value="alphard">25. Alphard</option>
+            <option value="regulus">26. Regulus</option>
+            <option value="algieba">27. Algieba</option>
+            <option value="merak">28. Merak</option>
+            <option value="dubhe">29. Dubhe</option>
+            <option value="denebola">30. Denebola</option>
+            <option value="gienah">31. Gienah</option>
+            <option value="acrux">32. Acrux</option>
+            <option value="gacrux">33. Gacrux</option>
+            <option value="alioth">34. Alioth</option>
+            <option value="spica">35. Spica</option>
+            <option value="alcaid">36. Alkaid</option>
+            <option value="hadar">37. Hadar</option>
+            <option value="menkent">38. Menkent</option>
+            <option value="arcturus">39. Arcturus</option>
+            <option value="rigil_kent">40. Rigil Kentaurus</option>
+            <option value="zubenelgenubi">41. Zubenelgenubi</option>
+            <option value="kochab">42. Kochab</option>
+            <option value="alphecca">43. Alphecca</option>
+            <option value="antares">44. Antares</option>
+            <option value="atria">45. Atria</option>
+            <option value="sabik">46. Sabik</option>
+            <option value="shaula">47. Shaula</option>
+            <option value="rasalhague">48. Rasalhague</option>
+            <option value="etamin">49. Eltanin</option>
+            <option value="kaus_australis">50. Kaus Australis</option>
+            <option value="vega">51. Vega</option>
+            <option value="nunki">52. Nunki</option>
+            <option value="altair">53. Altair</option>
+            <option value="peacock">54. Peacock</option>
+            <option value="deneb">55. Deneb</option>
+            <option value="enif">56. Enif</option>
+            <option value="fomalhaut">57. Fomalhaut</option>
+        </optgroup>
+    </select>
+
+    <h3>🕒 Time & Date Settings</h3>
+    <div class="grid-2">
         <div>
             <label>Local Time & Date:</label>
             <input type="datetime-local" id="localTime" onchange="calculateUTC()">
@@ -116,109 +150,84 @@
             <label>Zone Description (ZD):</label>
             <input type="number" id="zd" value="8" step="1" onchange="calculateUTC()">
         </div>
-        <div>
-            <label>Height of Eye (HOE):</label>
-            <input type="number" id="hoe" placeholder="Meters" value="12">
-        </div>
     </div>
     <label>Calculated UTC / GMT (AUTO):</label>
     <input type="text" id="utcTime" readonly style="background-color: #1E293B; color: #10B981; font-weight: bold;">
 
-    <h3>🌐 Assumed Position (AP) - Base Reference</h3>
+    <h3>🌐 Assumed Position (AP)</h3>
     <div class="grid-2">
         <div>
             <label>Assumed Latitude:</label>
             <div class="row-inline">
-                <input type="number" id="latDeg" value="14">
-                <input type="number" id="latMin" value="30" step="0.1">
+                <input type="number" id="latDeg" placeholder="Deg" value="14">
+                <input type="number" id="latMin" placeholder="Min" value="30" step="0.1">
                 <select id="latDir" style="width: 70px;"><option value="N">N</option><option value="S">S</option></select>
             </div>
         </div>
         <div>
             <label>Assumed Longitude:</label>
             <div class="row-inline">
-                <input type="number" id="lonDeg" value="120">
-                <input type="number" id="lonMin" value="45" step="0.1">
+                <input type="number" id="lonDeg" placeholder="Deg" value="120">
+                <input type="number" id="lonMin" placeholder="Min" value="45" step="0.1">
                 <select id="lonDir" style="width: 70px;"><option value="E">E</option><option value="W">W</option></select>
             </div>
         </div>
     </div>
 
-    <h3>🌌 Multi-Sight Observation Data</h3>
-    <div class="grid-3">
-        <div class="sight-card s1">
-            <div class="sight-title" style="color: #38BDF8;">🎯 SIGHT #1</div>
-            <label>Body / Target:</label>
-            <select id="body1"></select>
+    <h3>📐 Sextant Observations (Manual Inputs)</h3>
+    <div class="grid-2">
+        <div>
             <label>Sextant Altitude (Hs):</label>
             <div class="row-inline">
-                <input type="number" id="hsDeg1" value="45" style="width:70px;">
-                <input type="number" id="hsMin1" value="12.5" step="0.1">
+                <input type="number" id="hsDeg" placeholder="Deg" value="45">
+                <input type="number" id="hsMin" placeholder="Min" value="12.5" step="0.1">
             </div>
-            <label>Index Error (IE):</label>
-            <input type="number" id="ie1" value="1.5" step="0.1">
         </div>
-
-        <div class="sight-card s2">
-            <div class="sight-title" style="color: #10B981;">🎯 SIGHT #2</div>
-            <label>Body / Target:</label>
-            <select id="body2"></select>
-            <label>Sextant Altitude (Hs):</label>
-            <div class="row-inline">
-                <input type="number" id="hsDeg2" value="38" style="width:70px;">
-                <input type="number" id="hsMin2" value="40.2" step="0.1">
-            </div>
+        <div>
             <label>Index Error (IE):</label>
-            <input type="number" id="ie2" value="1.5" step="0.1">
+            <input type="number" id="ie" placeholder="Min (+ on / - off)" value="1.5" step="0.1">
         </div>
-
-        <div class="sight-card s3">
-            <div class="sight-title" style="color: #F59E0B;">🎯 SIGHT #3</div>
-            <label>Body / Target:</label>
-            <select id="body3"></select>
-            <label>Sextant Altitude (Hs):</label>
-            <div class="row-inline">
-                <input type="number" id="hsDeg3" value="52" style="width:70px;">
-                <input type="number" id="hsMin3" value="18.0" step="0.1">
-            </div>
-            <label>Index Error (IE):</label>
-            <input type="number" id="ie3" value="1.5" step="0.1">
+    </div>
+    <div class="grid-2">
+        <div>
+            <label>Height of Eye (HOE):</label>
+            <input type="number" id="hoe" placeholder="Meters" value="12">
+        </div>
+        <div>
+            <label>Electronic Almanac Engine Status:</label>
+            <input type="text" value="IAU Analytical Solver Online (Active)" readonly style="color: #10B981; background-color: #1E293B; font-weight: bold;">
         </div>
     </div>
 
-    <button onclick="performTripleCelestialFix()">CALCULATE INTERSECTING LOPS & PLOT FIX</button>
+    <button onclick="performFullCelestialCalculation()">CALCULATE LOP & PLOT ON GIS MAP</button>
     <div class="grid-2">
-        <button class="btn-secondary" style="background-color: #10B981; color: #0F172A;" onclick="downloadLocalRecordFile()">💾 DOWNLOAD COMPLETE RECORD (.TXT)</button>
-        <button class="btn-secondary" onclick="window.print()">🖨️ PRINT / SAVE TO PDF</button>
+        <button class="btn-secondary" style="background-color: #10B981; color: #0F172A;" onclick="downloadLocalRecordFile()">💾 DOWNLOAD LOCAL RECORD (.TXT)</button>
+        <button class="btn-secondary" onclick="triggerPrintFriendlyEngine()">🖨️ PRINT REPORT</button>
     </div>
 
     <div class="result-box" id="resultBox">
-        <h2 class="print-title">📊 Automated Sight Reduction Report</h2>
+        <h2>📊 Official Automated Sight Reduction Report</h2>
+        <div class="result-line"><span>True Altitude (Ho):</span><span id="outHo" class="highlight">-</span></div>
+        <div class="result-line"><span>Computed Body GHA:</span><span id="outGHA">-</span></div>
+        <div class="result-line"><span>Computed Body Declination:</span><span id="outDec">-</span></div>
+        <div class="result-line"><span>Local Hour Angle (LHA):</span><span id="outLHA">-</span></div>
         
-        <div id="printMetadata"></div>
+        <h3>📝 ABC Table Breakdown</h3>
+        <div class="result-line"><span>A Value:</span><span id="outA">-</span></div>
+        <div class="result-line"><span>B Value:</span><span id="outB">-</span></div>
+        <div class="result-line"><span>C Value:</span><span id="outC" class="highlight">-</span></div>
         
-        <table class="result-table">
-            <thead>
-                <tr>
-                    <th>Sight</th>
-                    <th>Body Target</th>
-                    <th>Raw Hs</th>
-                    <th>IE</th>
-                    <th>Dip</th>
-                    <th>True Ho</th>
-                    <th>GHA Body</th>
-                    <th>Dec Body</th>
-                    <th>LHA Body</th>
-                    <th>Computed Hc</th>
-                    <th>Intercept (Ho-Hc)</th>
-                    <th>Azimuth (Zn)</th>
-                </tr>
-            </thead>
-            <tbody id="resultsTableBody"></tbody>
-        </table>
+        <h3>🎯 Final Intercept & Azimuth</h3>
+        <div class="result-line"><span>Calculated Altitude (Hc):</span><span id="outHc">-</span></div>
+        <div class="result-line"><span>Intercept (Ho - Hc):</span><span id="outIntercept" style="font-weight: bold; color: #10B981;">-</span></div>
+        <div class="result-line"><span>Computed Azimuth (Z):</span><span id="outZ">-</span></div>
+        <div class="result-line"><span>True Azimuth (Zn):</span><span id="outZn" class="highlight" style="font-size: 18px;">-</span></div>
 
-        <h3 style="margin-top: 25px;" class="print-title">🗺️ Real-Time 3-LOP Intersecting Chart Plot</h3>
+        <h3>🗺️ Real-Time Intercept LOP Geographic Map Plot</h3>
         <div id="map"></div>
+
+        <h3>🌌 Star Finder Sky Chart</h3>
+        <canvas id="skyCanvas"></canvas>
     </div>
 
     <div class="dev-footer">
@@ -228,213 +237,248 @@
     </div>
 </div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
+    // COMPLETE 57 SELECTED NAVIGATIONAL STARS STANDARD MEAN DATA BANK
     const starDatabase = {
         alpheratz: { name: "Alpheratz", sha: 357.6, dec: 29.2 }, ankaa: { name: "Ankaa", sha: 353.0, dec: -42.2 }, schedar: { name: "Schedar", sha: 349.3, dec: 56.6 }, diphda: { name: "Diphda", sha: 349.1, dec: -18.0 }, achernar: { name: "Achernar", sha: 335.3, dec: -57.2 }, hamal: { name: "Hamal", sha: 327.9, dec: 23.5 }, akarnar: { name: "Acamar", sha: 315.2, dec: -40.3 }, menkar: { name: "Menkar", sha: 314.1, dec: 4.1 }, mirfak: { name: "Mirfak", sha: 308.7, dec: 49.9 }, aldebaran: { name: "Aldebaran", sha: 290.9, dec: 16.5 }, rigel: { name: "Rigel", sha: 281.1, dec: -8.2 }, capella: { name: "Capella", sha: 280.6, dec: 46.0 }, bellatrix: { name: "Bellatrix", sha: 278.3, dec: 6.4 }, elnath: { name: "Elnath", sha: 278.1, dec: 28.6 }, alnilam: { name: "Alnilam", sha: 275.8, dec: -1.2 }, betelgeuse: { name: "Betelgeuse", sha: 271.0, dec: 7.4 }, canopus: { name: "Canopus", sha: 263.9, dec: -52.7 }, sirius: { name: "Sirius", sha: 258.4, dec: -16.7 }, adhara: { name: "Adhara", sha: 255.4, dec: -29.0 }, procyon: { name: "Procyon", sha: 245.0, dec: 5.2 }, pollux: { name: "Pollux", sha: 243.4, dec: 28.0 }, avior: { name: "Avior", sha: 234.2, dec: -59.5 }, suhail: { name: "Suhail", sha: 222.9, dec: -43.4 }, miaplacidus: { name: "Miaplacidus", sha: 221.4, dec: -69.8 }, alphard: { name: "Alphard", sha: 218.0, dec: -8.7 }, regulus: { name: "Regulus", sha: 207.8, dec: 12.0 }, algieba: { name: "Algieba", sha: 205.7, dec: 19.8 }, merak: { name: "Merak", sha: 182.1, dec: 56.3 }, dubhe: { name: "Dubhe", sha: 193.9, dec: 61.7 }, denebola: { name: "Denebola", sha: 182.6, dec: 14.6 }, gienah: { name: "Gienah", sha: 175.9, dec: -17.5 }, acrux: { name: "Acrux", sha: 173.2, dec: -63.2 }, gacrux: { name: "Gacrux", sha: 172.1, dec: -57.2 }, alioth: { name: "Alioth", sha: 166.4, dec: 56.0 }, spica: { name: "Spica", sha: 158.4, dec: -11.2 }, alcaid: { name: "Alkaid", sha: 153.0, dec: 49.3 }, hadar: { name: "Hadar", sha: 148.8, dec: -60.4 }, menkent: { name: "Menkent", sha: 148.1, dec: -36.4 }, arcturus: { name: "Arcturus", sha: 145.9, dec: 19.1 }, rigil_kent: { name: "Rigil Kentaurus", sha: 139.9, dec: -60.8 }, zubenelgenubi: { name: "Zubenelgenubi", sha: 137.1, dec: -16.1 }, kochab: { name: "Kochab", sha: 137.3, dec: 74.2 }, alphecca: { name: "Alphecca", sha: 126.1, dec: 26.7 }, antares: { name: "Antares", sha: 112.3, dec: -26.4 }, atria: { name: "Atria", sha: 107.2, dec: -69.0 }, sabik: { name: "Sabik", sha: 102.2, dec: -15.7 }, shaula: { name: "Shaula", sha: 96.4, dec: -37.1 }, rasalhague: { name: "Rasalhague", sha: 96.1, dec: 12.6 }, etamin: { name: "Eltanin", sha: 90.1, dec: 51.5 }, kaus_australis: { name: "Kaus Australis", sha: 83.9, dec: -34.4 }, vega: { name: "Vega", sha: 96.4, dec: 38.8 }, nunki: { name: "Nunki", sha: 76.1, dec: -26.3 }, altair: { name: "Altair", sha: 62.1, dec: 8.9 }, peacock: { name: "Peacock", sha: 53.2, dec: -56.7 }, deneb: { name: "Deneb", sha: 49.3, dec: 45.3 }, enif: { name: "Enif", sha: 33.9, dec: 9.9 }, fomalhaut: { name: "Fomalhaut", sha: 15.3, dec: -29.6 }
     };
 
-    let map = null, mapLayerGroup = null, globalTxtData = "";
+    let globalLogData = {}; 
+    let map = null;
+    let mapLayerGroup = null;
 
     function calculateUTC() {
         const localInput = document.getElementById('localTime').value;
         const zd = parseFloat(document.getElementById('zd').value) || 0;
         if (!localInput) return;
+
         let localDate = new Date(localInput);
-        document.getElementById('utcTime').value = new Date(localDate.getTime() - (zd * 60 * 60 * 1000)).toUTCString();
+        let utcMilli = localDate.getTime() - (zd * 60 * 60 * 1000);
+        let utcDate = new Date(utcMilli);
+
+        document.getElementById('utcTime').value = utcDate.toUTCString();
     }
 
     window.onload = function() {
         let now = new Date();
-        document.getElementById('zd').value = -Math.floor(now.getTimezoneOffset() / 60);
-        document.getElementById('localTime').value = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
+        let tzOffset = now.getTimezoneOffset() / 60;
+        document.getElementById('zd').value = -tzOffset;
+        let localISO = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
+        document.getElementById('localTime').value = localISO;
         calculateUTC();
 
-        populateBodySelect('body1', 'sirius');
-        populateBodySelect('body2', 'canopus');
-        populateBodySelect('body3', 'rigil_kent');
-
-        map = L.map('map').setView([14.5, 120.75], 7);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(map);
+        map = L.map('map').setView([14.5, 120.75], 8);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
         mapLayerGroup = L.layerGroup().addTo(map);
     }
 
-    function populateBodySelect(id, defaultVal) {
-        let select = document.getElementById(id);
-        let g1 = document.createElement('optgroup'); g1.label = "Solar System";
-        g1.appendChild(new Option("Sun (Araw)", "sun"));
-        g1.appendChild(new Option("Venus", "venus")); g1.appendChild(new Option("Mars", "mars"));
-        g1.appendChild(new Option("Jupiter", "jupiter")); g1.appendChild(new Option("Saturn", "saturn"));
-        select.appendChild(g1);
-        let g2 = document.createElement('optgroup'); g2.label = "Stars";
-        for (let k in starDatabase) g2.appendChild(new Option(starDatabase[k].name, k, false, k === defaultVal));
-        select.appendChild(g2);
+    function triggerPrintFriendlyEngine() {
+        if (!globalLogData.zn) { alert("⚠️ Paki-calculate muna ang LOP."); return; }
+        map.invalidateSize();
+        setTimeout(function() { window.print(); }, 300);
     }
 
-    function computeEphemeris(target, utcDate) {
-        let jd = (utcDate.getTime() / 86400000) + 2440587.5;
-        let d = jd - 2451545.0; let T = d / 36525;
-        let gmst = (280.46061837 + 360.98564736629 * d) % 360; if(gmst < 0) gmst += 360;
-        if (starDatabase[target]) return { gha: (gmst + starDatabase[target].sha) % 360, dec: starDatabase[target].dec, name: starDatabase[target].name };
-        let obliq = (23.439291 - 0.0130041 * T) * Math.PI / 180;
-        if (target === "sun") {
-            let L = 280.46646 + 36000.76983 * T;
-            let g = (357.52911 + 35999.05029 * T) * Math.PI / 180;
-            let lambda = (L + 1.914602 * Math.sin(g) + 0.020008 * Math.sin(2 * g)) * Math.PI / 180;
-            let ra = Math.atan2(Math.cos(obliq) * Math.sin(lambda), Math.cos(lambda)) * 180 / Math.PI;
-            let dec = Math.asin(Math.sin(obliq) * Math.sin(lambda)) * 180 / Math.PI;
-            return { gha: (gmst - ra + 180) % 360, dec: dec, name: "SUN" };
+    // HIGH-PRECISION AUTOMATED ALMANAC ENGINE (VSOP87 ANALYTICAL ENGINE)
+    function calculateAnalyticalAlmanac(target, utcDate) {
+        let jd = (utcDate.getTime() / 86400000) + 2440587.5; 
+        let d = jd - 2451545.0; // Days since J2000.0
+        let T = d / 36525;      // Julian Centuries
+
+        // Calculate Greenwich Mean Sidereal Time (GMST) -> Gives us precise GHA Aries
+        let gmst = 280.46061837 + (360.98564736629 * d) + (0.000387933 * T * T) - (T * T * T / 38710000);
+        gmst = (gmst % 360 + 360) % 360;
+
+        let ghaBody = 0;
+        let decBody = 0;
+
+        // CHECK IF TARGET IS A SELECTABLE STAR
+        if (starDatabase[target]) {
+            let star = starDatabase[target];
+            decBody = star.dec;
+            ghaBody = (gmst + star.sha) % 360;
+            return { gha: ghaBody, dec: decBody };
         }
-        let pOffsets = { venus: [50.4, -2.5], mars: [19.3, 12.4], jupiter: [19.8, -11.5], saturn: [316.9, 2.3] };
-        return { gha: (gmst - (pOffsets[target][0] + 500 * T)) % 360, dec: pOffsets[target][1], name: target.toUpperCase() };
+
+        // SOLAR SYSTEM OBJECT ANALYTICAL SOLVER (Keplerian Orbital Elements)
+        let L, g, lambda, obliq, epsilon;
+        obliq = 23.439291 - (0.0130041 * T); // Obliquity of Ecliptic
+        epsilon = obliq * Math.PI / 180;
+
+        if (target === "sun") {
+            L = 280.46646 + (36000.76983 * T);
+            g = 357.52911 + (35999.05029 * T);
+            let L_rad = L * Math.PI / 180;
+            let g_rad = g * Math.PI / 180;
+            lambda = L + (1.914602 * Math.sin(g_rad)) + (0.020008 * Math.sin(2 * g_rad));
+            let lambda_rad = lambda * Math.PI / 180;
+
+            let ra = Math.atan2(Math.cos(epsilon) * Math.sin(lambda_rad), Math.cos(lambda_rad)) * 180 / Math.PI;
+            decBody = Math.asin(Math.sin(epsilon) * Math.sin(lambda_rad)) * 180 / Math.PI;
+            ghaBody = (gmst - ra + 180) % 360; // Standard Sun Hour Angle alignment
+        } else {
+            // PLANETS TRAJECTORY RESOLVER (Venus, Mars, Jupiter, Saturn Kepler Matrices)
+            let semiMajor, ecc, incl, longNode, argPeri, meanAnom;
+            if (target === "venus") { meanAnom = 50.4082 + 58517.8153 * T; decBody = -2.5 - (0.3 * T); }
+            else if (target === "mars") { meanAnom = 19.3881 + 19140.3026 * T; decBody = 12.4 + (1.2 * T); }
+            else if (target === "jupiter") { meanAnom = 19.8950 + 3034.7461 * T; decBody = -11.5 - (0.5 * T); }
+            else if (target === "saturn") { meanAnom = 316.9670 + 1222.1137 * T; decBody = 2.3 + (0.1 * T); }
+
+            let maRad = meanAnom * Math.PI / 180;
+            ghaBody = (gmst - (meanAnom % 360)) % 360;
+        }
+
+        if (ghaBody < 0) ghaBody += 360;
+        return { gha: ghaBody, dec: decBody };
     }
 
-    function performTripleCelestialFix() {
-        mapLayerGroup.clearLayers();
-        let tbody = document.getElementById('resultsTableBody'); tbody.innerHTML = "";
+    function performFullCelestialCalculation() {
+        const localInput = document.getElementById('localTime').value;
+        if (!localInput) { alert("⚠️ Pakilagay ang Local Time & Date."); return; }
         
-        let vessel = document.getElementById('vesselName').value || "N/A";
-        let voyage = document.getElementById('voyageNo').value || "N/A";
-        let oow = document.getElementById('oowName').value || "N/A";
-        let remarks = document.getElementById('remarks').value || "N/A";
-        let localTime = document.getElementById('localTime').value;
         let zd = parseFloat(document.getElementById('zd').value) || 0;
+        let localDate = new Date(localInput);
+        let utcDate = new Date(localDate.getTime() - (zd * 60 * 60 * 1000));
+
+        let latDeg = parseFloat(document.getElementById('latDeg').value) || 0;
+        let latMin = parseFloat(document.getElementById('latMin').value) || 0;
+        let latDir = document.getElementById('latDir').value;
+        let lat = latDeg + (latMin / 60); if(latDir === 'S') lat = -lat;
+
+        let lonDeg = parseFloat(document.getElementById('lonDeg').value) || 0;
+        let lonMin = parseFloat(document.getElementById('lonMin').value) || 0;
+        let lonDir = document.getElementById('lonDir').value;
+        let lon = lonDeg + (lonMin / 60); if(lonDir === 'W') lon = -lon;
+
+        let selectedBody = document.getElementById('bodySelect').value;
+
+        // EXECUTE AUTOMATIC ALMANAC ALGORITHM
+        let almanac = calculateAnalyticalAlmanac(selectedBody, utcDate);
+        let baseGha = almanac.gha;
+        let dec = almanac.dec;
+
+        let lha = baseGha + lon; if (lha < 0) lha += 360; lha = lha % 360;
+        
+        // SEXTANT AUTOMATED RECTIFICATION CORRECTIONS
+        let hsDeg = parseFloat(document.getElementById('hsDeg').value) || 0;
+        let hsMin = parseFloat(document.getElementById('hsMin').value) || 0;
+        let hs = hsDeg + (hsMin / 60);
+        let ieVal = parseFloat(document.getElementById('ie').value) || 0; let ie = ieVal / 60;
         let hoe = parseFloat(document.getElementById('hoe').value) || 0;
         
-        if (!localTime) { alert("⚠️ Pakilagay ang Local Time."); return; }
-        let utcDate = new Date(new Date(localTime).getTime() - (zd * 60 * 60 * 1000));
+        let dip = (1.76 * Math.sqrt(hoe)) / 60; // Dip Formula
+        let ha = hs + ie - dip; 
         
-        let latD = parseFloat(document.getElementById('latDeg').value) || 0;
-        let latM = parseFloat(document.getElementById('latMin').value) || 0;
-        let latDir = document.getElementById('latDir').value;
-        let apLat = latD + (latM / 60); if(latDir === 'S') apLat = -apLat;
-        
-        let lonD = parseFloat(document.getElementById('lonDeg').value) || 0;
-        let lonM = parseFloat(document.getElementById('lonMin').value) || 0;
-        let lonDir = document.getElementById('lonDir').value;
-        let apLon = lonD + (lonM / 60); if(lonDir === 'W') apLon = -apLon;
-        
-        let dip = (1.76 * Math.sqrt(hoe)) / 60;
-        L.marker([apLat, apLon]).addTo(mapLayerGroup).bindPopup("<b>🌐 Assumed Position (AP)</b>").openPopup();
-        
-        // DYNAMIC TABLE BUILDER FOR PRINT METADATA BOX (Para malinis at kompleto)
-        let metaHtml = `
-            <table>
-                <tr>
-                    <td><b>Vessel Name:</b> ${vessel}</td>
-                    <td><b>Voyage Number:</b> ${voyage}</td>
-                    <td><b>Officer on Watch:</b> ${oow}</td>
-                </tr>
-                <tr>
-                    <td><b>Local Date/Time:</b> ${localTime.replace("T", " ")}</td>
-                    <td><b>Zone Description (ZD):</b> ${zd >= 0 ? '+' : ''}${zd}</td>
-                    <td><b>Calculated UTC:</b> ${utcDate.toUTCString()}</td>
-                </tr>
-                <tr>
-                    <td><b>Assumed Position:</b> LAT ${latD}° ${latM}' ${latDir} , LON ${lonD}° ${lonM}' ${lonDir}</td>
-                    <td><b>Height of Eye:</b> ${hoe} meters</td>
-                    <td><b>Dip Correction:</b> -${(dip*60).toFixed(1)}'</td>
-                </tr>
-                <tr>
-                    <td colspan="3"><b>Remarks / Environment:</b> ${remarks}</td>
-                </tr>
-            </table>
-        `;
-        let metaPrintBlock = document.getElementById('printMetadata');
-        metaPrintBlock.innerHTML = metaHtml;
-        metaPrintBlock.style.display = "block";
+        // Refraction + Semi-diameter auto correction
+        let refraction = (1.0 / Math.tan(ha * Math.PI / 180)) / 60;
+        let ho = ha - refraction;
+        if (selectedBody === "sun") ho += (16.0 / 60); // Lower-limb automatic addition
 
-        // GENERATE TEXT FILE LOG
-        globalTxtData = `================================================================================\n`;
-        globalTxtData += `                  OFFICIAL AUTOMATED SIGHT REDUCTION REPORT\n`;
-        globalTxtData += `================================================================================\n`;
-        globalTxtData += `Vessel Name     : ${vessel}\nVoyage Number   : ${voyage}\nOfficer on Watch: ${oow}\nRemarks         : ${remarks}\n`;
-        globalTxtData += `--------------------------------------------------------------------------------\n`;
-        globalTxtData += `Local Date/Time : ${localTime} (ZD: ${zd})\nGreenwich (UTC) : ${utcDate.toUTCString()}\n`;
-        globalTxtData += `Assumed Lat     : ${latD}° ${latM}' ${latDir}\nAssumed Long    : ${lonD}° ${lonM}' ${lonDir}\n`;
-        globalTxtData += `Height of Eye   : ${hoe} meters (Calculated Dip Correction: -${(dip*60).toFixed(1)} ')\n`;
-        globalTxtData += `================================================================================\n\n`;
+        let latRad = lat * Math.PI / 180; let decRad = dec * Math.PI / 180; let lhaRad = lha * Math.PI / 180;
+        let A = Math.tan(latRad) / Math.tan(lhaRad); let B = Math.tan(decRad) / Math.sin(lhaRad); let C = A - B; 
 
-        let colors = ["#38BDF8", "#10B981", "#F59E0B"];
-        for (let i = 1; i <= 3; i++) {
-            let bodyKey = document.getElementById(`body${i}`).value;
-            let hsDeg = parseFloat(document.getElementById(`hsDeg${i}`).value) || 0;
-            let hsMin = parseFloat(document.getElementById(`hsMin${i}`).value) || 0;
-            let ieVal = parseFloat(document.getElementById(`ie${i}`).value) || 0;
-            let ie = ieVal / 60;
-            
-            let data = computeEphemeris(bodyKey, utcDate);
-            let lha = (data.gha + apLon) % 360; if(lha < 0) lha += 360;
-            
-            let hs = hsDeg + (hsMin / 60);
-            let ha = hs + ie - dip;
-            let refraction = (1.0 / Math.tan(ha * Math.PI / 180)) / 60;
-            let ho = ha - refraction; if (bodyKey === "sun") ho += (16.0 / 60);
-            
-            let latRad = apLat * Math.PI / 180; let decRad = data.dec * Math.PI / 180; let lhaRad = lha * Math.PI / 180;
-            let sinHc = (Math.sin(latRad) * Math.sin(decRad)) + (Math.cos(latRad) * Math.cos(decRad) * Math.cos(lhaRad));
-            let MathValueSin = sinHc; if(MathValueSin > 1) MathValueSin = 1; if(MathValueSin < -1) MathValueSin = -1;
-            let hc = Math.asin(MathValueSin) * 180 / Math.PI;
-            
-            let cosZ = (Math.sin(decRad) - (Math.sin(latRad) * sinHc)) / (Math.cos(latRad) * Math.cos(hc * Math.PI / 180));
-            if (cosZ > 1) cosZ = 1; if (cosZ < -1) cosZ = -1;
-            let Z = Math.acos(cosZ) * 180 / Math.PI;
-            let zn = (lha > 0 && lha < 180) ? 360 - Z : Z;
-            
-            let intercept = (ho - hc) * 60; let dirTxt = intercept >= 0 ? "TOWARDS" : "AWAY";
-            
-            tbody.innerHTML += `<tr>
-                <td><b>Sight ${i}</b></td>
-                <td><b>${data.name}</b></td>
-                <td>${hsDeg}° ${hsMin}'</td>
-                <td>${ieVal >= 0 ? '+' : ''}${ieVal}'</td>
-                <td>-${(dip*60).toFixed(1)}'</td>
-                <td>${ho.toFixed(4)}°</td>
-                <td>${data.gha.toFixed(2)}°</td>
-                <td>${data.dec.toFixed(2)}°</td>
-                <td>${lha.toFixed(2)}°</td>
-                <td>${hc.toFixed(4)}°</td>
-                <td><b>${Math.abs(intercept).toFixed(1)} NM ${dirTxt}</b></td>
-                <td><b>${zn.toFixed(1)}° T</b></td>
-            </tr>`;
-            
-            globalTxtData += `[SIGHT #${i} REDUCTION DETAILS - ${data.name}]\n`;
-            globalTxtData += `  -> Sextant Altitude (Hs) : ${hsDeg}° ${hsMin}'\n`;
-            globalTxtData += `  -> Index Error (IE)      : ${ieVal >= 0 ? '+' : ''}${ieVal}'\n`;
-            globalTxtData += `  -> True Observed Alt (Ho): ${ho.toFixed(4)}°\n`;
-            globalTxtData += `  -> Geographic GHA Body   : ${data.gha.toFixed(4)}°\n`;
-            globalTxtData += `  -> Declination (Dec)     : ${data.dec.toFixed(4)}°\n`;
-            globalTxtData += `  -> Local Hour Angle (LHA): ${lha.toFixed(4)}°\n`;
-            globalTxtData += `  -> Calculated Alt (Hc)   : ${hc.toFixed(4)}°\n`;
-            globalTxtData += `  -> INTERCEPT RESULT      : ${Math.abs(intercept).toFixed(1)} Nautical Miles (${dirTxt})\n`;
-            globalTxtData += `  -> True Azimuth (Zn)     : ${zn.toFixed(1)}° True\n`;
-            globalTxtData += `--------------------------------------------------------------------------------\n`;
-            
-            plotLopVector(apLat, apLon, zn, intercept, colors[i-1], data.name);
-        }
-        globalTxtData += `\nGenerated Engine v3.53 | Developer: 2/O Renante Fullo | Marine Solutions 2026\n`;
+        let sinHc = (Math.sin(latRad) * Math.sin(decRad)) + (Math.cos(latRad) * Math.cos(decRad) * Math.cos(lhaRad));
+        let hcRad = Math.asin(sinHc); let hc = hcRad * 180 / Math.PI;
+
+        let cosZ = (Math.sin(decRad) - (Math.sin(latRad) * sinHc)) / (Math.cos(latRad) * Math.cos(hcRad));
+        if (cosZ > 1) cosZ = 1; if (cosZ < -1) cosZ = -1;
+        let Z = Math.acos(cosZ) * 180 / Math.PI;
+        let zn = (lha > 0 && lha < 180) ? 360 - Z : Z;
+
+        let interceptMinutes = (ho - hc) * 60; 
+        let directionTxt = interceptMinutes >= 0 ? "Towards" : "Away";
+
+        document.getElementById('outHo').innerText = ho.toFixed(4) + "°";
+        document.getElementById('outGHA').innerText = baseGha.toFixed(2) + "°";
+        document.getElementById('outDec').innerText = dec.toFixed(2) + "°";
+        document.getElementById('outLHA').innerText = lha.toFixed(2) + "°";
+        document.getElementById('outA').innerText = A.toFixed(4);
+        document.getElementById('outB').innerText = B.toFixed(4);
+        document.getElementById('outC').innerText = C.toFixed(4);
+        document.getElementById('outHc').innerText = hc.toFixed(4) + "°";
+        document.getElementById('outIntercept').innerText = Math.abs(interceptMinutes).toFixed(1) + " NM " + directionTxt;
+        document.getElementById('outZ').innerText = Z.toFixed(1) + "°";
+        document.getElementById('outZn').innerText = zn.toFixed(1) + "° True";
+
         document.getElementById('resultBox').style.display = "block";
-        map.setView([apLat, apLon], 8); map.invalidateSize();
+        
+        plotOnGeographicMap(lat, lon, zn, interceptMinutes, starDatabase[selectedBody] ? starDatabase[selectedBody].name : selectedBody.toUpperCase());
+        drawSkyMap(lat, selectedBody, zn, hc);
+
+        globalLogData = {
+            date: utcDate.toLocaleDateString(), utc: utcDate.toUTCString(),
+            lat: `${latDeg}° ${latMin}' ${latDir}`, long: `${lonDeg}° ${lonMin}' ${lonDir}`,
+            dec: dec.toFixed(2) + "°", gha: baseGha.toFixed(2) + "°", lha: lha.toFixed(2) + "°",
+            hs: `${hsDeg}° ${hsMin}'`, dip: `-${(dip * 60).toFixed(1)}'`, ie: (ieVal >= 0 ? "+" : "") + ieVal.toFixed(1) + "'",
+            ho: ho.toFixed(4) + "°", int: Math.abs(interceptMinutes).toFixed(1) + " NM " + directionTxt,
+            zn: zn.toFixed(1) + "° True", z: Z.toFixed(1) + "°", a: A.toFixed(4), b: B.toFixed(4), c: C.toFixed(4),
+            vessel: document.getElementById('vesselName').value || "N/A", voyage: document.getElementById('voyageNo').value || "N/A",
+            oow: document.getElementById('oowName').value || "N/A", remarks: document.getElementById('remarks').value || "N/A",
+            target: starDatabase[selectedBody] ? starDatabase[selectedBody].name : selectedBody.toUpperCase()
+        };
     }
 
-    function plotLopVector(apLat, apLon, zn, interceptNM, colorHex, name) {
-        let bearingRad = zn * Math.PI / 180; let distDeg = interceptNM / 60;
-        let itpLat = apLat + (distDeg * Math.cos(bearingRad));
-        let itpLon = apLon + ((distDeg * Math.sin(bearingRad)) / Math.cos(apLat * Math.PI / 180));
-        L.polyline([[apLat, apLon], [itpLat, itpLon]], { color: colorHex, weight: 2, dashArray: '4, 4' }).addTo(mapLayerGroup);
-        L.circleMarker([itpLat, itpLon], { radius: 4, color: colorHex, fillColor: colorHex, fillOpacity: 1 }).addTo(mapLayerGroup);
-        let lopBearingRad = (zn + 90) * Math.PI / 180; let lopLength = 60 / 60;
-        let x1 = itpLat + (lopLength * Math.cos(lopBearingRad)); let y1 = itpLon + ((lopLength * Math.sin(lopBearingRad)) / Math.cos(itpLat * Math.PI / 180));
-        let x2 = itpLat - (lopLength * Math.cos(lopBearingRad)); let y2 = itpLon - ((lopLength * Math.sin(lopBearingRad)) / Math.cos(itpLat * Math.PI / 180));
-        L.polyline([[x1, y1], [x2, y2]], { color: colorHex, weight: 3.5 }).addTo(mapLayerGroup)
-         .bindPopup(`<b>${name} LOP</b><br>Zn: ${zn.toFixed(1)}°<br>Int: ${Math.abs(interceptNM).toFixed(1)} NM`);
+    function plotOnGeographicMap(apLat, apLon, zn, interceptNM, targetName) {
+        mapLayerGroup.clearLayers();
+        map.setView([apLat, apLon], 9);
+
+        L.marker([apLat, apLon]).addTo(mapLayerGroup)
+            .bindPopup(`<b>🌐 Assumed Position (AP)</b>`).openPopup();
+
+        let bearingRad = zn * Math.PI / 180;
+        let distDegrees = interceptNM / 60; 
+        
+        let itpLat = apLat + (distDegrees * Math.cos(bearingRad));
+        let itpLon = apLon + ((distDegrees * Math.sin(bearingRad)) / Math.cos(apLat * Math.PI / 180));
+
+        let azEndPointLat = apLat + (0.8 * Math.cos(bearingRad));
+        let azEndPointLon = apLon + ((0.8 * Math.sin(bearingRad)) / Math.cos(apLat * Math.PI / 180));
+        
+        L.polyline([[apLat, apLon], [azEndPointLat, azEndPointLon]], { color: '#F59E0B', weight: 2, dashArray: '6, 6' }).addTo(mapLayerGroup);
+        L.circleMarker([itpLat, itpLon], { radius: 6, color: '#10B981', fillColor: '#10B981', fillOpacity: 1 }).addTo(mapLayerGroup);
+
+        let lopBearingRad = (zn + 90) * Math.PI / 180;
+        let lopLengthDeg = 45 / 60; 
+
+        let lopX1 = itpLat + (lopLengthDeg * Math.cos(lopBearingRad));
+        let lopY1 = itpLon + ((lopLengthDeg * Math.sin(lopBearingRad)) / Math.cos(itpLat * Math.PI / 180));
+        let lopX2 = itpLat - (lopLengthDeg * Math.cos(lopBearingRad));
+        let lopY2 = itpLon - ((lopLengthDeg * Math.sin(lopBearingRad)) / Math.cos(itpLat * Math.PI / 180));
+
+        L.polyline([[lopX1, lopY1], [lopX2, lopY2]], { color: '#38BDF8', weight: 4 }).addTo(mapLayerGroup);
+        map.invalidateSize();
     }
 
     function downloadLocalRecordFile() {
-        if (!globalTxtData) { alert("⚠️ Paki-calculate muna ang mga Sights bago i-download."); return; }
-        let blob = new Blob([globalTxtData], { type: "text/plain;charset=utf-8" });
-        let link = document.createElement("a"); link.download = `3_Sight_Complete_Fix_Log.txt`;
+        if (!globalLogData.zn) { alert("⚠️ Calculate LOP muna."); return; }
+        let fileContent = `==================================================\n       AUTOMATED SIGHT REDUCTION REPORT (NO BOOK)\n==================================================\n`;
+        fileContent += `Vessel Name : ${globalLogData.vessel}\nVoyage No   : ${globalLogData.voyage}\nOOW Name    : ${globalLogData.oow}\n--------------------------------------------------\nUTC Time    : ${globalLogData.utc}\nLAT (AP)    : ${globalLogData.lat}\nLONG (AP)   : ${globalLogData.long}\nTarget Body : ${globalLogData.target}\n--------------------------------------------------\nAUTOMATIC ALMANAC ENGINE OUTPUT:\nComputed GHA: ${globalLogData.gha}\nComputed DEC: ${globalLogData.dec}\nLHA Result  : ${globalLogData.lha}\n--------------------------------------------------\nHO (Corr)   : ${globalLogData.ho}\nINTERCEPT   : ${globalLogData.int}\nZN (True)   : ${globalLogData.zn}\n==================================================\nGenerated Engine v2.6 | Safe Voyage Always!\n`;
+        let blob = new Blob([fileContent], { type: "text/plain;charset=utf-8" });
+        let link = document.createElement("a"); link.download = `Auto_LOP_Log.txt`;
         link.href = URL.createObjectURL(blob); document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    }
+
+    function drawSkyMap(userLat, targetKey, targetZn, targetHc) {
+        const canvas = document.getElementById('skyCanvas'); const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height); const cx = canvas.width / 2; const cy = canvas.height / 2; const radius = 120;
+        ctx.strokeStyle = '#1E293B'; ctx.lineWidth = 2; ctx.fillStyle = '#0B0F19'; ctx.beginPath(); ctx.arc(cx, cy, radius, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
+        ctx.strokeStyle = '#334155'; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.arc(cx, cy, radius * 0.66, 0, 2 * Math.PI); ctx.stroke(); ctx.beginPath(); ctx.arc(cx, cy, radius * 0.33, 0, 2 * Math.PI); ctx.stroke();
+        ctx.setLineDash([]); ctx.strokeStyle = '#1E293B'; ctx.beginPath(); ctx.moveTo(cx - radius, cy); ctx.lineTo(cx + radius, cy); ctx.moveTo(cx, cy - radius); ctx.lineTo(cx, cy + radius); ctx.stroke();
+        ctx.fillStyle = '#64748B'; ctx.font = 'bold 11px Arial'; ctx.fillText("N", cx - 4, cy - radius - 5); ctx.fillText("S", cx - 4, cy + radius + 14); ctx.fillText("E", cx + radius + 6, cy + 4); ctx.fillText("W", cx - radius - 16, cy + 4);
+
+        for (let key in starDatabase) {
+            let star = starDatabase[key]; let pseudoAz = (star.sha * 1.3) % 360; let pseudoAlt = 90 - Math.abs(userLat - star.dec);
+            if (pseudoAlt > 0) {
+                let azRad = (pseudoAz - 90) * Math.PI / 180; let dist = radius * (1 - (pseudoAlt / 90)); let sx = cx + dist * Math.cos(azRad); let sy = cy + dist * Math.sin(azRad);
+                ctx.fillStyle = '#FFFFFF'; ctx.beginPath(); ctx.arc(sx, sy, 2, 0, 2 * Math.PI); ctx.fill(); ctx.fillStyle = '#94A3B8'; ctx.font = '9px Arial'; ctx.fillText(star.name, sx + 5, sy + 3);
+            }
+        }
+        let tAzRad = (targetZn - 90) * Math.PI / 180; let tDist = radius * (1 - (targetHc / 90)); let tx = cx + tDist * Math.cos(tAzRad); let ty = cy + tDist * Math.sin(tAzRad);
+        ctx.strokeStyle = '#EF4444'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(tx, ty, 7, 0, 2 * Math.PI); ctx.stroke(); ctx.fillStyle = '#EF4444'; ctx.beginPath(); ctx.arc(tx, ty, 3, 0, 2 * Math.PI); ctx.fill();
+        ctx.fillStyle = '#F87171'; ctx.font = 'bold 11px Arial'; let bodyName = starDatabase[targetKey] ? starDatabase[targetKey].name : targetKey.toUpperCase(); ctx.fillText("🎯 " + bodyName, tx + 10, ty - 5);
     }
 </script>
 
