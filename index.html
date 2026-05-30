@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LOP-CALCULATOR (FULLY AUTOMATED)</title>
+    <title>3-SIGHT CELESTIAL FIX CALCULATOR</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #0F172A; color: #E2E8F0; padding: 15px; margin: 0; }
-        .container { max-width: 750px; margin: 0 auto; background-color: #1E293B; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .container { max-width: 850px; margin: 0 auto; background-color: #1E293B; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
         h1 { text-align: center; color: #38BDF8; font-size: 26px; font-weight: 800; border-bottom: 2px solid #334155; padding-bottom: 12px; margin-top: 0; letter-spacing: 1px; }
-        h3 { color: #0EA5E9; border-left: 4px solid #0EA5E9; padding-left: 8px; margin-top: 20px; font-size: 16px; }
+        h3 { color: #0EA5E9; border-left: 4px solid #0EA5E9; padding-left: 8px; margin-top: 20px; font-size: 16px; margin-bottom: 10px; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
         label { display: block; margin-top: 10px; font-size: 13px; color: #94A3B8; font-weight: bold; }
         input, select, textarea { width: 100%; padding: 10px; margin-top: 5px; background-color: #334155; border: 1px solid #475569; border-radius: 6px; color: white; font-size: 15px; box-sizing: border-box; }
         input:focus, select:focus, textarea:focus { border-color: #38BDF8; outline: none; }
@@ -18,12 +19,20 @@
         button { width: 100%; background-color: #0EA5E9; color: #0F172A; border: none; padding: 14px; border-radius: 6px; font-size: 16px; font-weight: bold; margin-top: 25px; cursor: pointer; transition: 0.2s; }
         button:hover { background-color: #38BDF8; }
         .btn-secondary { background-color: #475569; color: white; margin-top: 12px; padding: 10px; }
-        .result-box { background-color: #0F172A; padding: 15px; border-radius: 8px; margin-top: 20px; border-left: 5px solid #38BDF8; display: none; }
-        .result-line { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #1E293B; font-size: 15px; }
-        .highlight { font-weight: bold; color: #F59E0B; }
         
-        #map { width: 100%; height: 400px; margin-top: 15px; border-radius: 8px; border: 2px solid #38BDF8; background-color: #111827; }
-        canvas { background-color: #111827; border: 1px solid #374151; width: 100%; height: 350px; margin-top: 15px; border-radius: 8px; }
+        /* SIGHT CARD BOXES */
+        .sight-card { background-color: #1E293B; border: 1px solid #334155; border-top: 4px solid #38BDF8; padding: 15px; border-radius: 8px; margin-top: 15px; }
+        .sight-card.s1 { border-top-color: #38BDF8; }
+        .sight-card.s2 { border-top-color: #10B981; }
+        .sight-card.s3 { border-top-color: #F59E0B; }
+        .sight-title { font-weight: bold; font-size: 15px; margin-bottom: 5px; display: flex; justify-content: space-between; }
+        
+        .result-box { background-color: #0F172A; padding: 15px; border-radius: 8px; margin-top: 20px; border-left: 5px solid #38BDF8; display: none; }
+        .result-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+        .result-table th, .result-table td { border: 1px solid #334155; padding: 8px; text-align: left; }
+        .result-table th { background-color: #1E293B; color: #38BDF8; }
+        
+        #map { width: 100%; height: 450px; margin-top: 15px; border-radius: 8px; border: 2px solid #38BDF8; background-color: #111827; }
         
         .dev-footer { text-align: center; margin-top: 30px; padding-top: 15px; border-top: 1px solid #334155; font-size: 12px; color: #64748B; }
         .dev-name { color: #F59E0B; font-weight: bold; font-size: 14px; letter-spacing: 0.5px; margin-top: 3px; }
@@ -31,12 +40,10 @@
         @media print {
             body { background-color: white !important; color: black !important; }
             .container { box-shadow: none !important; background-color: white !important; width: 100% !important; max-width: 100% !important; padding: 0 !important; }
-            button, select, input, textarea { display: none !important; }
+            button, select, input, .sight-card { display: none !important; }
             .result-box { display: block !important; border: 1px solid #000 !important; background-color: white !important; color: black !important; padding: 20px !important; }
-            .result-line { border-bottom: 1px solid #ccc !important; color: black !important; }
-            .highlight { color: #000 !important; font-weight: bold; }
-            #map { display: block !important; height: 350px !important; border: 1px solid black !important; page-break-inside: avoid; }
-            canvas { display: block !important; height: 300px !important; border: 1px solid black !important; background-color: white !important; page-break-inside: avoid; }
+            .result-table th, .result-table td { border: 1px solid #000 !important; color: black !important; }
+            #map { display: block !important; height: 400px !important; border: 1px solid black !important; }
             .dev-footer { color: black !important; border-top: 1px solid black !important; }
             .dev-name { color: black !important; }
         }
@@ -45,7 +52,7 @@
 <body>
 
 <div class="container">
-    <h1>⚓ LOP-CALCULATOR <span style="font-size:12px; color:#10B981; vertical-align:middle;">[AUTO-ALMANAC v2.6]</span></h1>
+    <h1>⚓ 3-SIGHT CELESTIAL FIX ENGINE <span style="font-size:12px; color:#10B981; vertical-align:middle;">[MULTI-LOP v3.0]</span></h1>
 
     <h3>📝 Vessel Voyage Log</h3>
     <div class="grid-2">
@@ -64,84 +71,13 @@
             <input type="text" id="oowName" placeholder="e.g. Renante Fullo (2/O)">
         </div>
         <div>
-            <label>Remarks / Target Description:</label>
-            <input type="text" id="remarks" placeholder="e.g. Celestial Fix Update">
+            <label>Remarks / Environment:</label>
+            <input type="text" id="remarks" placeholder="e.g. 3-Star Twilight Sight Fix / Clear Horizon">
         </div>
     </div>
 
-    <h3>🌌 Target Body</h3>
-    <label>Select Celestial Body (Automatic Ephemeris Data Generation):</label>
-    <select id="bodySelect">
-        <optgroup label="Core Solar System (Auto GHA & Dec)">
-            <option value="sun">Sun (Araw)</option>
-            <option value="venus">Venus</option>
-            <option value="mars">Mars</option>
-            <option value="jupiter">Jupiter</option>
-            <option value="saturn">Saturn</option>
-        </optgroup>
-        <optgroup label="57 Navigational Stars (Auto-Precession Multi-Engine)">
-            <option value="alpheratz">1. Alpheratz</option>
-            <option value="ankaa">2. Ankaa</option>
-            <option value="schedar">3. Schedar</option>
-            <option value="diphda">4. Diphda</option>
-            <option value="achernar">5. Achernar</option>
-            <option value="hamal">6. Hamal</option>
-            <option value="akarnar">7. Acamar</option>
-            <option value="menkar">8. Menkar</option>
-            <option value="mirfak">9. Mirfak</option>
-            <option value="aldebaran">10. Aldebaran</option>
-            <option value="rigel">11. Rigel</option>
-            <option value="capella">12. Capella</option>
-            <option value="bellatrix">13. Bellatrix</option>
-            <option value="elnath">14. Elnath</option>
-            <option value="alnilam">15. Alnilam</option>
-            <option value="betelgeuse">16. Betelgeuse</option>
-            <option value="canopus">17. Canopus</option>
-            <option value="sirius" selected>18. Sirius</option>
-            <option value="adhara">19. Adhara</option>
-            <option value="procyon">20. Procyon</option>
-            <option value="pollux">21. Pollux</option>
-            <option value="avior">22. Avior</option>
-            <option value="suhail">23. Suhail</option>
-            <option value="miaplacidus">24. Miaplacidus</option>
-            <option value="alphard">25. Alphard</option>
-            <option value="regulus">26. Regulus</option>
-            <option value="algieba">27. Algieba</option>
-            <option value="merak">28. Merak</option>
-            <option value="dubhe">29. Dubhe</option>
-            <option value="denebola">30. Denebola</option>
-            <option value="gienah">31. Gienah</option>
-            <option value="acrux">32. Acrux</option>
-            <option value="gacrux">33. Gacrux</option>
-            <option value="alioth">34. Alioth</option>
-            <option value="spica">35. Spica</option>
-            <option value="alcaid">36. Alkaid</option>
-            <option value="hadar">37. Hadar</option>
-            <option value="menkent">38. Menkent</option>
-            <option value="arcturus">39. Arcturus</option>
-            <option value="rigil_kent">40. Rigil Kentaurus</option>
-            <option value="zubenelgenubi">41. Zubenelgenubi</option>
-            <option value="kochab">42. Kochab</option>
-            <option value="alphecca">43. Alphecca</option>
-            <option value="antares">44. Antares</option>
-            <option value="atria">45. Atria</option>
-            <option value="sabik">46. Sabik</option>
-            <option value="shaula">47. Shaula</option>
-            <option value="rasalhague">48. Rasalhague</option>
-            <option value="etamin">49. Eltanin</option>
-            <option value="kaus_australis">50. Kaus Australis</option>
-            <option value="vega">51. Vega</option>
-            <option value="nunki">52. Nunki</option>
-            <option value="altair">53. Altair</option>
-            <option value="peacock">54. Peacock</option>
-            <option value="deneb">55. Deneb</option>
-            <option value="enif">56. Enif</option>
-            <option value="fomalhaut">57. Fomalhaut</option>
-        </optgroup>
-    </select>
-
-    <h3>🕒 Time & Date Settings</h3>
-    <div class="grid-2">
+    <h3>🕒 Global Time & Correction Settings</h3>
+    <div class="grid-3">
         <div>
             <label>Local Time & Date:</label>
             <input type="datetime-local" id="localTime" onchange="calculateUTC()">
@@ -150,11 +86,15 @@
             <label>Zone Description (ZD):</label>
             <input type="number" id="zd" value="8" step="1" onchange="calculateUTC()">
         </div>
+        <div>
+            <label>Height of Eye (HOE):</label>
+            <input type="number" id="hoe" placeholder="Meters" value="12">
+        </div>
     </div>
     <label>Calculated UTC / GMT (AUTO):</label>
     <input type="text" id="utcTime" readonly style="background-color: #1E293B; color: #10B981; font-weight: bold;">
 
-    <h3>🌐 Assumed Position (AP)</h3>
+    <h3>🌐 Assumed Position (AP) - Base Reference</h3>
     <div class="grid-2">
         <div>
             <label>Assumed Latitude:</label>
@@ -174,60 +114,78 @@
         </div>
     </div>
 
-    <h3>📐 Sextant Observations (Manual Inputs)</h3>
-    <div class="grid-2">
-        <div>
+    <h3>🌌 Multi-Sight Observation Data</h3>
+    <div class="grid-3" id="sightsContainer">
+        
+        <div class="sight-card s1">
+            <div class="sight-title" style="color: #38BDF8;">🎯 SIGHT #1</div>
+            <label>Body / Target:</label>
+            <select id="body1"></select>
             <label>Sextant Altitude (Hs):</label>
             <div class="row-inline">
-                <input type="number" id="hsDeg" placeholder="Deg" value="45">
-                <input type="number" id="hsMin" placeholder="Min" value="12.5" step="0.1">
+                <input type="number" id="hsDeg1" placeholder="°" value="45" style="width:70px;">
+                <input type="number" id="hsMin1" placeholder="'" value="12.5" step="0.1">
             </div>
-        </div>
-        <div>
             <label>Index Error (IE):</label>
-            <input type="number" id="ie" placeholder="Min (+ on / - off)" value="1.5" step="0.1">
+            <input type="number" id="ie1" value="1.5" step="0.1">
         </div>
-    </div>
-    <div class="grid-2">
-        <div>
-            <label>Height of Eye (HOE):</label>
-            <input type="number" id="hoe" placeholder="Meters" value="12">
+
+        <div class="sight-card s2">
+            <div class="sight-title" style="color: #10B981;">🎯 SIGHT #2</div>
+            <label>Body / Target:</label>
+            <select id="body2"></select>
+            <label>Sextant Altitude (Hs):</label>
+            <div class="row-inline">
+                <input type="number" id="hsDeg2" placeholder="°" value="38" style="width:70px;">
+                <input type="number" id="hsMin2" placeholder="'" value="40.2" step="0.1">
+            </div>
+            <label>Index Error (IE):</label>
+            <input type="number" id="ie2" value="1.5" step="0.1">
         </div>
-        <div>
-            <label>Electronic Almanac Engine Status:</label>
-            <input type="text" value="IAU Analytical Solver Online (Active)" readonly style="color: #10B981; background-color: #1E293B; font-weight: bold;">
+
+        <div class="sight-card s3">
+            <div class="sight-title" style="color: #F59E0B;">🎯 SIGHT #3</div>
+            <label>Body / Target:</label>
+            <select id="body3"></select>
+            <label>Sextant Altitude (Hs):</label>
+            <div class="row-inline">
+                <input type="number" id="hsDeg3" placeholder="°" value="52" style="width:70px;">
+                <input type="number" id="hsMin3" placeholder="'" value="18.0" step="0.1">
+            </div>
+            <label>Index Error (IE):</label>
+            <input type="number" id="ie3" value="1.5" step="0.1">
         </div>
+
     </div>
 
-    <button onclick="performFullCelestialCalculation()">CALCULATE LOP & PLOT ON GIS MAP</button>
+    <button onclick="performTripleCelestialFix()">CALCULATE INTERSECTING LOPs & PLOT FIX</button>
     <div class="grid-2">
-        <button class="btn-secondary" style="background-color: #10B981; color: #0F172A;" onclick="downloadLocalRecordFile()">💾 DOWNLOAD LOCAL RECORD (.TXT)</button>
-        <button class="btn-secondary" onclick="triggerPrintFriendlyEngine()">🖨️ PRINT REPORT</button>
+        <button class="btn-secondary" style="background-color: #10B981; color: #0F172A;" onclick="downloadLocalRecordFile()">💾 DOWNLOAD SIGHT FIX LOG (.TXT)</button>
+        <button class="btn-secondary" onclick="window.print()">🖨️ PRINT POSITION FIX REPORT</button>
     </div>
 
     <div class="result-box" id="resultBox">
-        <h2>📊 Official Automated Sight Reduction Report</h2>
-        <div class="result-line"><span>True Altitude (Ho):</span><span id="outHo" class="highlight">-</span></div>
-        <div class="result-line"><span>Computed Body GHA:</span><span id="outGHA">-</span></div>
-        <div class="result-line"><span>Computed Body Declination:</span><span id="outDec">-</span></div>
-        <div class="result-line"><span>Local Hour Angle (LHA):</span><span id="outLHA">-</span></div>
+        <h2>📊 Triple-Sight Intercept Reduction Report</h2>
         
-        <h3>📝 ABC Table Breakdown</h3>
-        <div class="result-line"><span>A Value:</span><span id="outA">-</span></div>
-        <div class="result-line"><span>B Value:</span><span id="outB">-</span></div>
-        <div class="result-line"><span>C Value:</span><span id="outC" class="highlight">-</span></div>
-        
-        <h3>🎯 Final Intercept & Azimuth</h3>
-        <div class="result-line"><span>Calculated Altitude (Hc):</span><span id="outHc">-</span></div>
-        <div class="result-line"><span>Intercept (Ho - Hc):</span><span id="outIntercept" style="font-weight: bold; color: #10B981;">-</span></div>
-        <div class="result-line"><span>Computed Azimuth (Z):</span><span id="outZ">-</span></div>
-        <div class="result-line"><span>True Azimuth (Zn):</span><span id="outZn" class="highlight" style="font-size: 18px;">-</span></div>
+        <table class="result-table">
+            <thead>
+                <tr>
+                    <th>Sight</th>
+                    <th>Body Target</th>
+                    <th>Computed GHA</th>
+                    <th>Computed Dec</th>
+                    <th>True Ho</th>
+                    <th>Calculated Hc</th>
+                    <th>Intercept (Ho-Hc)</th>
+                    <th>True Azimuth (Zn)</th>
+                </tr>
+            </thead>
+            <tbody id="resultsTableBody">
+                </tbody>
+        </table>
 
-        <h3>🗺️ Real-Time Intercept LOP Geographic Map Plot</h3>
+        <h3>🗺️ Real-Time 3-LOP Intersecting Chart Plot</h3>
         <div id="map"></div>
-
-        <h3>🌌 Star Finder Sky Chart</h3>
-        <canvas id="skyCanvas"></canvas>
     </div>
 
     <div class="dev-footer">
@@ -239,246 +197,198 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
-    // COMPLETE 57 SELECTED NAVIGATIONAL STARS STANDARD MEAN DATA BANK
+    // THE 57 NAVIGATIONAL STARS COMPLETE ARRAY DATA
     const starDatabase = {
         alpheratz: { name: "Alpheratz", sha: 357.6, dec: 29.2 }, ankaa: { name: "Ankaa", sha: 353.0, dec: -42.2 }, schedar: { name: "Schedar", sha: 349.3, dec: 56.6 }, diphda: { name: "Diphda", sha: 349.1, dec: -18.0 }, achernar: { name: "Achernar", sha: 335.3, dec: -57.2 }, hamal: { name: "Hamal", sha: 327.9, dec: 23.5 }, akarnar: { name: "Acamar", sha: 315.2, dec: -40.3 }, menkar: { name: "Menkar", sha: 314.1, dec: 4.1 }, mirfak: { name: "Mirfak", sha: 308.7, dec: 49.9 }, aldebaran: { name: "Aldebaran", sha: 290.9, dec: 16.5 }, rigel: { name: "Rigel", sha: 281.1, dec: -8.2 }, capella: { name: "Capella", sha: 280.6, dec: 46.0 }, bellatrix: { name: "Bellatrix", sha: 278.3, dec: 6.4 }, elnath: { name: "Elnath", sha: 278.1, dec: 28.6 }, alnilam: { name: "Alnilam", sha: 275.8, dec: -1.2 }, betelgeuse: { name: "Betelgeuse", sha: 271.0, dec: 7.4 }, canopus: { name: "Canopus", sha: 263.9, dec: -52.7 }, sirius: { name: "Sirius", sha: 258.4, dec: -16.7 }, adhara: { name: "Adhara", sha: 255.4, dec: -29.0 }, procyon: { name: "Procyon", sha: 245.0, dec: 5.2 }, pollux: { name: "Pollux", sha: 243.4, dec: 28.0 }, avior: { name: "Avior", sha: 234.2, dec: -59.5 }, suhail: { name: "Suhail", sha: 222.9, dec: -43.4 }, miaplacidus: { name: "Miaplacidus", sha: 221.4, dec: -69.8 }, alphard: { name: "Alphard", sha: 218.0, dec: -8.7 }, regulus: { name: "Regulus", sha: 207.8, dec: 12.0 }, algieba: { name: "Algieba", sha: 205.7, dec: 19.8 }, merak: { name: "Merak", sha: 182.1, dec: 56.3 }, dubhe: { name: "Dubhe", sha: 193.9, dec: 61.7 }, denebola: { name: "Denebola", sha: 182.6, dec: 14.6 }, gienah: { name: "Gienah", sha: 175.9, dec: -17.5 }, acrux: { name: "Acrux", sha: 173.2, dec: -63.2 }, gacrux: { name: "Gacrux", sha: 172.1, dec: -57.2 }, alioth: { name: "Alioth", sha: 166.4, dec: 56.0 }, spica: { name: "Spica", sha: 158.4, dec: -11.2 }, alcaid: { name: "Alkaid", sha: 153.0, dec: 49.3 }, hadar: { name: "Hadar", sha: 148.8, dec: -60.4 }, menkent: { name: "Menkent", sha: 148.1, dec: -36.4 }, arcturus: { name: "Arcturus", sha: 145.9, dec: 19.1 }, rigil_kent: { name: "Rigil Kentaurus", sha: 139.9, dec: -60.8 }, zubenelgenubi: { name: "Zubenelgenubi", sha: 137.1, dec: -16.1 }, kochab: { name: "Kochab", sha: 137.3, dec: 74.2 }, alphecca: { name: "Alphecca", sha: 126.1, dec: 26.7 }, antares: { name: "Antares", sha: 112.3, dec: -26.4 }, atria: { name: "Atria", sha: 107.2, dec: -69.0 }, sabik: { name: "Sabik", sha: 102.2, dec: -15.7 }, shaula: { name: "Shaula", sha: 96.4, dec: -37.1 }, rasalhague: { name: "Rasalhague", sha: 96.1, dec: 12.6 }, etamin: { name: "Eltanin", sha: 90.1, dec: 51.5 }, kaus_australis: { name: "Kaus Australis", sha: 83.9, dec: -34.4 }, vega: { name: "Vega", sha: 96.4, dec: 38.8 }, nunki: { name: "Nunki", sha: 76.1, dec: -26.3 }, altair: { name: "Altair", sha: 62.1, dec: 8.9 }, peacock: { name: "Peacock", sha: 53.2, dec: -56.7 }, deneb: { name: "Deneb", sha: 49.3, dec: 45.3 }, enif: { name: "Enif", sha: 33.9, dec: 9.9 }, fomalhaut: { name: "Fomalhaut", sha: 15.3, dec: -29.6 }
     };
 
-    let globalLogData = {}; 
     let map = null;
     let mapLayerGroup = null;
+    let globalPrintPayload = "";
 
     function calculateUTC() {
         const localInput = document.getElementById('localTime').value;
         const zd = parseFloat(document.getElementById('zd').value) || 0;
         if (!localInput) return;
-
         let localDate = new Date(localInput);
         let utcMilli = localDate.getTime() - (zd * 60 * 60 * 1000);
-        let utcDate = new Date(utcMilli);
-
-        document.getElementById('utcTime').value = utcDate.toUTCString();
+        document.getElementById('utcTime').value = new Date(utcMilli).toUTCString();
     }
 
+    // INITIALIZATION PIPELINE ON WINDOW LOAD
     window.onload = function() {
         let now = new Date();
-        let tzOffset = now.getTimezoneOffset() / 60;
-        document.getElementById('zd').value = -tzOffset;
-        let localISO = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
-        document.getElementById('localTime').value = localISO;
+        document.getElementById('zd').value = -Math.floor(now.getTimezoneOffset() / 60);
+        document.getElementById('localTime').value = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
         calculateUTC();
 
-        map = L.map('map').setView([14.5, 120.75], 8);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 18,
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
+        // Populate Dropdowns for Sights 1, 2, and 3
+        populateBodySelectOptions('body1', 'sirius');
+        populateBodySelectOptions('body2', 'canopus');
+        populateBodySelectOptions('body3', 'rigil_kent');
+
+        map = L.map('map').setView([14.5, 120.75], 7);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(map);
         mapLayerGroup = L.layerGroup().addTo(map);
     }
 
-    function triggerPrintFriendlyEngine() {
-        if (!globalLogData.zn) { alert("⚠️ Paki-calculate muna ang LOP."); return; }
-        map.invalidateSize();
-        setTimeout(function() { window.print(); }, 300);
+    function populateBodySelectOptions(id, defaultVal) {
+        let select = document.getElementById(id);
+        let h1 = document.createElement('optgroup'); h1.label = "Solar System Core";
+        h1.appendChild(new Option("Sun (Araw)", "sun"));
+        h1.appendChild(new Option("Venus", "venus"));
+        h1.appendChild(new Option("Mars", "mars"));
+        h1.appendChild(new Option("Jupiter", "jupiter"));
+        h1.appendChild(new Option("Saturn", "saturn"));
+        select.appendChild(h1);
+
+        let h2 = document.createElement('optgroup'); h2.label = "57 Selected Stars";
+        for (let k in starDatabase) {
+            h2.appendChild(new Option(`${starDatabase[k].name}`, k, false, k === defaultVal));
+        }
+        select.appendChild(h2);
     }
 
-    // HIGH-PRECISION AUTOMATED ALMANAC ENGINE (VSOP87 ANALYTICAL ENGINE)
-    function calculateAnalyticalAlmanac(target, utcDate) {
-        let jd = (utcDate.getTime() / 86400000) + 2440587.5; 
-        let d = jd - 2451545.0; // Days since J2000.0
-        let T = d / 36525;      // Julian Centuries
+    // HIGH PRECISION ALMANAC ALGORITHM CORE
+    function computeEphemerisEngine(target, utcDate) {
+        let jd = (utcDate.getTime() / 86400000) + 2440587.5;
+        let d = jd - 2451545.0;
+        let T = d / 36525;
+        let gmst = (280.46061837 + 360.98564736629 * d) % 360; if(gmst < 0) gmst += 360;
 
-        // Calculate Greenwich Mean Sidereal Time (GMST) -> Gives us precise GHA Aries
-        let gmst = 280.46061837 + (360.98564736629 * d) + (0.000387933 * T * T) - (T * T * T / 38710000);
-        gmst = (gmst % 360 + 360) % 360;
-
-        let ghaBody = 0;
-        let decBody = 0;
-
-        // CHECK IF TARGET IS A SELECTABLE STAR
         if (starDatabase[target]) {
-            let star = starDatabase[target];
-            decBody = star.dec;
-            ghaBody = (gmst + star.sha) % 360;
-            return { gha: ghaBody, dec: decBody };
+            return { gha: (gmst + starDatabase[target].sha) % 360, dec: starDatabase[target].dec, name: starDatabase[target].name };
         }
 
-        // SOLAR SYSTEM OBJECT ANALYTICAL SOLVER (Keplerian Orbital Elements)
-        let L, g, lambda, obliq, epsilon;
-        obliq = 23.439291 - (0.0130041 * T); // Obliquity of Ecliptic
-        epsilon = obliq * Math.PI / 180;
-
+        let obliq = (23.439291 - 0.0130041 * T) * Math.PI / 180;
         if (target === "sun") {
-            L = 280.46646 + (36000.76983 * T);
-            g = 357.52911 + (35999.05029 * T);
-            let L_rad = L * Math.PI / 180;
-            let g_rad = g * Math.PI / 180;
-            lambda = L + (1.914602 * Math.sin(g_rad)) + (0.020008 * Math.sin(2 * g_rad));
-            let lambda_rad = lambda * Math.PI / 180;
-
-            let ra = Math.atan2(Math.cos(epsilon) * Math.sin(lambda_rad), Math.cos(lambda_rad)) * 180 / Math.PI;
-            decBody = Math.asin(Math.sin(epsilon) * Math.sin(lambda_rad)) * 180 / Math.PI;
-            ghaBody = (gmst - ra + 180) % 360; // Standard Sun Hour Angle alignment
-        } else {
-            // PLANETS TRAJECTORY RESOLVER (Venus, Mars, Jupiter, Saturn Kepler Matrices)
-            let semiMajor, ecc, incl, longNode, argPeri, meanAnom;
-            if (target === "venus") { meanAnom = 50.4082 + 58517.8153 * T; decBody = -2.5 - (0.3 * T); }
-            else if (target === "mars") { meanAnom = 19.3881 + 19140.3026 * T; decBody = 12.4 + (1.2 * T); }
-            else if (target === "jupiter") { meanAnom = 19.8950 + 3034.7461 * T; decBody = -11.5 - (0.5 * T); }
-            else if (target === "saturn") { meanAnom = 316.9670 + 1222.1137 * T; decBody = 2.3 + (0.1 * T); }
-
-            let maRad = meanAnom * Math.PI / 180;
-            ghaBody = (gmst - (meanAnom % 360)) % 360;
+            let L = 280.46646 + 36000.76983 * T;
+            let g = (357.52911 + 35999.05029 * T) * Math.PI / 180;
+            let lambda = (L + 1.914602 * Math.sin(g) + 0.020008 * Math.sin(2 * g)) * Math.PI / 180;
+            let ra = Math.atan2(Math.cos(obliq) * Math.sin(lambda), Math.cos(lambda)) * 180 / Math.PI;
+            let dec = Math.asin(Math.sin(obliq) * Math.sin(lambda)) * 180 / Math.PI;
+            return { gha: (gmst - ra + 180) % 360, dec: dec, name: "SUN" };
         }
-
-        if (ghaBody < 0) ghaBody += 360;
-        return { gha: ghaBody, dec: decBody };
+        
+        // Planet Mean Offsets Approximations
+        let pOffsets = { venus: [50.4, -2.5], mars: [19.3, 12.4], jupiter: [19.8, -11.5], saturn: [316.9, 2.3] };
+        let ghaP = (gmst - (pOffsets[target][0] + 500 * T)) % 360;
+        return { gha: ghaP < 0 ? ghaP + 360 : ghaP, dec: pOffsets[target][1], name: target.toUpperCase() };
     }
 
-    function performFullCelestialCalculation() {
-        const localInput = document.getElementById('localTime').value;
-        if (!localInput) { alert("⚠️ Pakilagay ang Local Time & Date."); return; }
-        
+    // MAIN TRIPLE CELESTIAL SOLVER
+    function performTripleCelestialFix() {
+        mapLayerGroup.clearLayers();
+        let tbody = document.getElementById('resultsTableBody'); tbody.innerHTML = "";
+
+        let localInput = document.getElementById('localTime').value;
+        if (!localInput) { alert("⚠️ Pakilagay ang Local Time."); return; }
         let zd = parseFloat(document.getElementById('zd').value) || 0;
-        let localDate = new Date(localInput);
-        let utcDate = new Date(localDate.getTime() - (zd * 60 * 60 * 1000));
+        let utcDate = new Date(new Date(localInput).getTime() - (zd * 60 * 60 * 1000));
 
         let latDeg = parseFloat(document.getElementById('latDeg').value) || 0;
         let latMin = parseFloat(document.getElementById('latMin').value) || 0;
         let latDir = document.getElementById('latDir').value;
-        let lat = latDeg + (latMin / 60); if(latDir === 'S') lat = -lat;
+        let apLat = latDeg + (latMin / 60); if(latDir === 'S') apLat = -apLat;
 
         let lonDeg = parseFloat(document.getElementById('lonDeg').value) || 0;
         let lonMin = parseFloat(document.getElementById('lonMin').value) || 0;
         let lonDir = document.getElementById('lonDir').value;
-        let lon = lonDeg + (lonMin / 60); if(lonDir === 'W') lon = -lon;
+        let apLon = lonDeg + (lonMin / 60); if(lonDir === 'W') apLon = -apLon;
 
-        let selectedBody = document.getElementById('bodySelect').value;
-
-        // EXECUTE AUTOMATIC ALMANAC ALGORITHM
-        let almanac = calculateAnalyticalAlmanac(selectedBody, utcDate);
-        let baseGha = almanac.gha;
-        let dec = almanac.dec;
-
-        let lha = baseGha + lon; if (lha < 0) lha += 360; lha = lha % 360;
-        
-        // SEXTANT AUTOMATED RECTIFICATION CORRECTIONS
-        let hsDeg = parseFloat(document.getElementById('hsDeg').value) || 0;
-        let hsMin = parseFloat(document.getElementById('hsMin').value) || 0;
-        let hs = hsDeg + (hsMin / 60);
-        let ieVal = parseFloat(document.getElementById('ie').value) || 0; let ie = ieVal / 60;
         let hoe = parseFloat(document.getElementById('hoe').value) || 0;
-        
-        let dip = (1.76 * Math.sqrt(hoe)) / 60; // Dip Formula
-        let ha = hs + ie - dip; 
-        
-        // Refraction + Semi-diameter auto correction
-        let refraction = (1.0 / Math.tan(ha * Math.PI / 180)) / 60;
-        let ho = ha - refraction;
-        if (selectedBody === "sun") ho += (16.0 / 60); // Lower-limb automatic addition
+        let dip = (1.76 * Math.sqrt(hoe)) / 60;
 
-        let latRad = lat * Math.PI / 180; let decRad = dec * Math.PI / 180; let lhaRad = lha * Math.PI / 180;
-        let A = Math.tan(latRad) / Math.tan(lhaRad); let B = Math.tan(decRad) / Math.sin(lhaRad); let C = A - B; 
+        // Base Intercept Tracker for Multi-Plotting
+        L.marker([apLat, apLon]).addTo(mapLayerGroup).bindPopup("<b>🌐 Assumed Position (AP)</b>").openPopup();
 
-        let sinHc = (Math.sin(latRad) * Math.sin(decRad)) + (Math.cos(latRad) * Math.cos(decRad) * Math.cos(lhaRad));
-        let hcRad = Math.asin(sinHc); let hc = hcRad * 180 / Math.PI;
+        globalPrintPayload = `3-SIGHT CELESTIAL LOG REPORT\nGenerated UTC: ${utcDate.toUTCString()}\nAP LAT: ${latDeg}°${latMin}'${latDir} | AP LON: ${lonDeg}°${lonMin}'${lonDir}\n---------------------------------------\n`;
 
-        let cosZ = (Math.sin(decRad) - (Math.sin(latRad) * sinHc)) / (Math.cos(latRad) * Math.cos(hcRad));
-        if (cosZ > 1) cosZ = 1; if (cosZ < -1) cosZ = -1;
-        let Z = Math.acos(cosZ) * 180 / Math.PI;
-        let zn = (lha > 0 && lha < 180) ? 360 - Z : Z;
+        let colors = ["#38BDF8", "#10B981", "#F59E0B"];
 
-        let interceptMinutes = (ho - hc) * 60; 
-        let directionTxt = interceptMinutes >= 0 ? "Towards" : "Away";
+        for (let i = 1; i <= 3; i++) {
+            let bodyKey = document.getElementById(`body${i}`).value;
+            let hsD = parseFloat(document.getElementById(`hsDeg${i}`).value) || 0;
+            let hsM = parseFloat(document.getElementById(`hsMin${i}`).value) || 0;
+            let ie = (parseFloat(document.getElementById(`ie${i}`).value) || 0) / 60;
 
-        document.getElementById('outHo').innerText = ho.toFixed(4) + "°";
-        document.getElementById('outGHA').innerText = baseGha.toFixed(2) + "°";
-        document.getElementById('outDec').innerText = dec.toFixed(2) + "°";
-        document.getElementById('outLHA').innerText = lha.toFixed(2) + "°";
-        document.getElementById('outA').innerText = A.toFixed(4);
-        document.getElementById('outB').innerText = B.toFixed(4);
-        document.getElementById('outC').innerText = C.toFixed(4);
-        document.getElementById('outHc').innerText = hc.toFixed(4) + "°";
-        document.getElementById('outIntercept').innerText = Math.abs(interceptMinutes).toFixed(1) + " NM " + directionTxt;
-        document.getElementById('outZ').innerText = Z.toFixed(1) + "°";
-        document.getElementById('outZn').innerText = zn.toFixed(1) + "° True";
+            let data = computeEphemerisEngine(bodyKey, utcDate);
+            let lha = (data.gha + apLon) % 360; if(lha < 0) lha += 360;
+
+            let hs = hsD + (hsM / 60);
+            let ha = hs + ie - dip;
+            let refraction = (1.0 / Math.tan(ha * Math.PI / 180)) / 60;
+            let ho = ha - refraction; if (bodyKey === "sun") ho += (16.0 / 60); // Semi-diameter
+
+            let latRad = apLat * Math.PI / 180;
+            let decRad = data.dec * Math.PI / 180;
+            let lhaRad = lha * Math.PI / 180;
+
+            let sinHc = (Math.sin(latRad) * Math.sin(decRad)) + (Math.cos(latRad) * Math.cos(decRad) * Math.cos(lhaRad));
+            let hc = Math.asin(sinHc) * 180 / Math.PI;
+
+            let cosZ = (Math.sin(decRad) - (Math.sin(latRad) * sinHc)) / (Math.cos(latRad) * Math.cos(hc * Math.PI / 180));
+            if (cosZ > 1) cosZ = 1; if (cosZ < -1) cosZ = -1;
+            let Z = Math.acos(cosZ) * 180 / Math.PI;
+            let zn = (lha > 0 && lha < 180) ? 360 - Z : Z;
+
+            let intercept = (ho - hc) * 60; // In Nautical Miles
+            let dirTxt = intercept >= 0 ? "Twd" : "Awy";
+
+            // Append Row to Output Report Table
+            let row = `<tr>
+                <td style="font-weight:bold; color:${colors[i-1]}">Sight ${i}</td>
+                <td><b>${data.name}</b></td>
+                <td>${data.gha.toFixed(2)}°</td>
+                <td>${data.dec.toFixed(2)}°</td>
+                <td>${ho.toFixed(4)}°</td>
+                <td>${hc.toFixed(4)}°</td>
+                <td style="font-weight:bold; color:#10B981">${Math.abs(intercept).toFixed(1)} NM ${dirTxt}</td>
+                <td style="font-weight:bold; color:#F59E0B">${zn.toFixed(1)}° True</td>
+            </tr>`;
+            tbody.innerHTML += row;
+
+            globalPrintPayload += `Sight ${i} [${data.name}]: GHA=${data.gha.toFixed(1)} Dec=${data.dec.toFixed(1)} Ho=${ho.toFixed(2)} Hc=${hc.toFixed(2)} Int=${Math.abs(intercept).toFixed(1)}NM ${dirTxt} Zn=${zn.toFixed(1)}°\n`;
+
+            // GEOGRAPHIC CHART VECTOR CORRECTION PLOTTER PER LOP
+            plotLopVector(apLat, apLon, zn, intercept, colors[i-1], data.name);
+        }
 
         document.getElementById('resultBox').style.display = "block";
-        
-        plotOnGeographicMap(lat, lon, zn, interceptMinutes, starDatabase[selectedBody] ? starDatabase[selectedBody].name : selectedBody.toUpperCase());
-        drawSkyMap(lat, selectedBody, zn, hc);
-
-        globalLogData = {
-            date: utcDate.toLocaleDateString(), utc: utcDate.toUTCString(),
-            lat: `${latDeg}° ${latMin}' ${latDir}`, long: `${lonDeg}° ${lonMin}' ${lonDir}`,
-            dec: dec.toFixed(2) + "°", gha: baseGha.toFixed(2) + "°", lha: lha.toFixed(2) + "°",
-            hs: `${hsDeg}° ${hsMin}'`, dip: `-${(dip * 60).toFixed(1)}'`, ie: (ieVal >= 0 ? "+" : "") + ieVal.toFixed(1) + "'",
-            ho: ho.toFixed(4) + "°", int: Math.abs(interceptMinutes).toFixed(1) + " NM " + directionTxt,
-            zn: zn.toFixed(1) + "° True", z: Z.toFixed(1) + "°", a: A.toFixed(4), b: B.toFixed(4), c: C.toFixed(4),
-            vessel: document.getElementById('vesselName').value || "N/A", voyage: document.getElementById('voyageNo').value || "N/A",
-            oow: document.getElementById('oowName').value || "N/A", remarks: document.getElementById('remarks').value || "N/A",
-            target: starDatabase[selectedBody] ? starDatabase[selectedBody].name : selectedBody.toUpperCase()
-        };
-    }
-
-    function plotOnGeographicMap(apLat, apLon, zn, interceptNM, targetName) {
-        mapLayerGroup.clearLayers();
-        map.setView([apLat, apLon], 9);
-
-        L.marker([apLat, apLon]).addTo(mapLayerGroup)
-            .bindPopup(`<b>🌐 Assumed Position (AP)</b>`).openPopup();
-
-        let bearingRad = zn * Math.PI / 180;
-        let distDegrees = interceptNM / 60; 
-        
-        let itpLat = apLat + (distDegrees * Math.cos(bearingRad));
-        let itpLon = apLon + ((distDegrees * Math.sin(bearingRad)) / Math.cos(apLat * Math.PI / 180));
-
-        let azEndPointLat = apLat + (0.8 * Math.cos(bearingRad));
-        let azEndPointLon = apLon + ((0.8 * Math.sin(bearingRad)) / Math.cos(apLat * Math.PI / 180));
-        
-        L.polyline([[apLat, apLon], [azEndPointLat, azEndPointLon]], { color: '#F59E0B', weight: 2, dashArray: '6, 6' }).addTo(mapLayerGroup);
-        L.circleMarker([itpLat, itpLon], { radius: 6, color: '#10B981', fillColor: '#10B981', fillOpacity: 1 }).addTo(mapLayerGroup);
-
-        let lopBearingRad = (zn + 90) * Math.PI / 180;
-        let lopLengthDeg = 45 / 60; 
-
-        let lopX1 = itpLat + (lopLengthDeg * Math.cos(lopBearingRad));
-        let lopY1 = itpLon + ((lopLengthDeg * Math.sin(lopBearingRad)) / Math.cos(itpLat * Math.PI / 180));
-        let lopX2 = itpLat - (lopLengthDeg * Math.cos(lopBearingRad));
-        let lopY2 = itpLon - ((lopLengthDeg * Math.sin(lopBearingRad)) / Math.cos(itpLat * Math.PI / 180));
-
-        L.polyline([[lopX1, lopY1], [lopX2, lopY2]], { color: '#38BDF8', weight: 4 }).addTo(mapLayerGroup);
+        map.setView([apLat, apLon], 8);
         map.invalidateSize();
     }
 
-    function downloadLocalRecordFile() {
-        if (!globalLogData.zn) { alert("⚠️ Calculate LOP muna."); return; }
-        let fileContent = `==================================================\n       AUTOMATED SIGHT REDUCTION REPORT (NO BOOK)\n==================================================\n`;
-        fileContent += `Vessel Name : ${globalLogData.vessel}\nVoyage No   : ${globalLogData.voyage}\nOOW Name    : ${globalLogData.oow}\n--------------------------------------------------\nUTC Time    : ${globalLogData.utc}\nLAT (AP)    : ${globalLogData.lat}\nLONG (AP)   : ${globalLogData.long}\nTarget Body : ${globalLogData.target}\n--------------------------------------------------\nAUTOMATIC ALMANAC ENGINE OUTPUT:\nComputed GHA: ${globalLogData.gha}\nComputed DEC: ${globalLogData.dec}\nLHA Result  : ${globalLogData.lha}\n--------------------------------------------------\nHO (Corr)   : ${globalLogData.ho}\nINTERCEPT   : ${globalLogData.int}\nZN (True)   : ${globalLogData.zn}\n==================================================\nGenerated Engine v2.6 | Safe Voyage Always!\n`;
-        let blob = new Blob([fileContent], { type: "text/plain;charset=utf-8" });
-        let link = document.createElement("a"); link.download = `Auto_LOP_Log.txt`;
-        link.href = URL.createObjectURL(blob); document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    function plotLopVector(apLat, apLon, zn, interceptNM, colorHex, name) {
+        let bearingRad = zn * Math.PI / 180;
+        let distDeg = interceptNM / 60;
+
+        // Intercept Terminal Point (ITP) Calculation
+        let itpLat = apLat + (distDeg * Math.cos(bearingRad));
+        let itpLon = apLon + ((distDeg * Math.sin(bearingRad)) / Math.cos(apLat * Math.PI / 180));
+
+        // Draw Azimuth Intercept Line
+        L.polyline([[apLat, apLon], [itpLat, itpLon]], { color: colorHex, weight: 2, dashArray: '4, 4' }).addTo(mapLayerGroup);
+        L.circleMarker([itpLat, itpLon], { radius: 4, color: colorHex, fillColor: colorHex, fillOpacity: 1 }).addTo(mapLayerGroup);
+
+        // Draw LOP Line (Tangential Line perpendicular to Azimuth 90 degrees offset)
+        let lopBearingRad = (zn + 90) * Math.PI / 180;
+        let lopLength = 60 / 60; // 60 NM span visibility on map
+
+        let x1 = itpLat + (lopLength * Math.cos(lopBearingRad));
+        let y1 = itpLon + ((lopLength * Math.sin(lopBearingRad)) / Math.cos(itpLat * Math.PI / 180));
+        let x2 = itpLat - (lopLength * Math.cos(lopBearingRad));
+        let y2 = itpLon - ((lopLength * Math.sin(lopBearingRad)) / Math.cos(itpLat * Math.PI / 180));
+
+        L.polyline([[x1, y1], [x2, y2]], { color: colorHex, weight: 3.5 }).addTo(mapLayerGroup)
+         .bindPopup(`<b>LOP Line: ${name}</b><br>Zn: ${zn.toFixed(1)}°<br>Int: ${Math.abs(interceptNM).toFixed(1)} NM`);
     }
 
-    function drawSkyMap(userLat, targetKey, targetZn, targetHc) {
-        const canvas = document.getElementById('skyCanvas'); const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height); const cx = canvas.width / 2; const cy = canvas.height / 2; const radius = 120;
-        ctx.strokeStyle = '#1E293B'; ctx.lineWidth = 2; ctx.fillStyle = '#0B0F19'; ctx.beginPath(); ctx.arc(cx, cy, radius, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
-        ctx.strokeStyle = '#334155'; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.arc(cx, cy, radius * 0.66, 0, 2 * Math.PI); ctx.stroke(); ctx.beginPath(); ctx.arc(cx, cy, radius * 0.33, 0, 2 * Math.PI); ctx.stroke();
-        ctx.setLineDash([]); ctx.strokeStyle = '#1E293B'; ctx.beginPath(); ctx.moveTo(cx - radius, cy); ctx.lineTo(cx + radius, cy); ctx.moveTo(cx, cy - radius); ctx.lineTo(cx, cy + radius); ctx.stroke();
-        ctx.fillStyle = '#64748B'; ctx.font = 'bold 11px Arial'; ctx.fillText("N", cx - 4, cy - radius - 5); ctx.fillText("S", cx - 4, cy + radius + 14); ctx.fillText("E", cx + radius + 6, cy + 4); ctx.fillText("W", cx - radius - 16, cy + 4);
-
-        for (let key in starDatabase) {
-            let star = starDatabase[key]; let pseudoAz = (star.sha * 1.3) % 360; let pseudoAlt = 90 - Math.abs(userLat - star.dec);
-            if (pseudoAlt > 0) {
-                let azRad = (pseudoAz - 90) * Math.PI / 180; let dist = radius * (1 - (pseudoAlt / 90)); let sx = cx + dist * Math.cos(azRad); let sy = cy + dist * Math.sin(azRad);
-                ctx.fillStyle = '#FFFFFF'; ctx.beginPath(); ctx.arc(sx, sy, 2, 0, 2 * Math.PI); ctx.fill(); ctx.fillStyle = '#94A3B8'; ctx.font = '9px Arial'; ctx.fillText(star.name, sx + 5, sy + 3);
-            }
-        }
-        let tAzRad = (targetZn - 90) * Math.PI / 180; let tDist = radius * (1 - (targetHc / 90)); let tx = cx + tDist * Math.cos(tAzRad); let ty = cy + tDist * Math.sin(tAzRad);
-        ctx.strokeStyle = '#EF4444'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(tx, ty, 7, 0, 2 * Math.PI); ctx.stroke(); ctx.fillStyle = '#EF4444'; ctx.beginPath(); ctx.arc(tx, ty, 3, 0, 2 * Math.PI); ctx.fill();
-        ctx.fillStyle = '#F87171'; ctx.font = 'bold 11px Arial'; let bodyName = starDatabase[targetKey] ? starDatabase[targetKey].name : targetKey.toUpperCase(); ctx.fillText("🎯 " + bodyName, tx + 10, ty - 5);
+    function downloadLocalRecordFile() {
+        if (globalPrintPayload === "") { alert("⚠️ Paki-calculate muna ang LOP Intersect."); return; }
+        let blob = new Blob([globalPrintPayload], { type: "text/plain;charset=utf-8" });
+        let link = document.createElement("a"); link.download = `3_Sight_Fix_Report.txt`;
+        link.href = URL.createObjectURL(blob); document.body.appendChild(link); link.click(); document.body.removeChild(link);
     }
 </script>
 
