@@ -37,21 +37,40 @@
         .dev-footer { text-align: center; margin-top: 30px; padding-top: 15px; border-top: 1px solid #334155; font-size: 12px; color: #64748B; }
         .dev-name { color: #F59E0B; font-weight: bold; font-size: 14px; letter-spacing: 0.5px; margin-top: 3px; }
 
-        /* CRITICAL UPGRADE: PROFESSIONAL PRINT/PDF MEDIA OVERRIDES */
+        /* FIX ENHANCEMENT: ULTRA LIGHT PRINT OVERRIDES FOR PDF */
         @media print {
             body { background-color: white !important; color: black !important; padding: 0; }
             .container { box-shadow: none !important; background-color: white !important; width: 100% !important; max-width: 100% !important; padding: 0 !important; }
-            button, select, input { display: none !important; }
+            button, select, input, label, h1, h3 { display: none !important; }
             .sight-card { display: none !important; }
-            h3 { color: black !important; border-left: 4px solid black !important; }
             
-            .result-box { display: block !important; border: 1px solid #000 !important; background-color: white !important; color: black !important; padding: 20px !important; margin-top: 0 !important; }
-            .result-table { color: black !important; }
-            .result-table th, .result-table td { border: 1px solid #000 !important; color: black !important; }
-            .result-table th { background-color: #f1f5f9 !important; color: black !important; }
+            .result-box { display: block !important; border: none !important; background-color: white !important; color: black !important; padding: 0 !important; margin-top: 0 !important; }
             
-            #map { display: block !important; height: 400px !important; border: 1px solid black !important; page-break-inside: avoid; }
-            .dev-footer { color: black !important; border-top: 1px solid black !important; margin-top: 50px; }
+            /* Pinagaan ang Voyage Metadata Box (Light gray border, puting background, itim na letra) */
+            #printMetadata { 
+                display: block !important; 
+                border: 1px solid #cbd5e1 !important; 
+                background-color: #f8fafc !important; 
+                color: #0f172a !important; 
+                padding: 15px !important; 
+                font-size: 13px !important;
+                line-height: 1.6 !important;
+                border-radius: 6px !important;
+                margin-bottom: 20px !important;
+            }
+            
+            /* Puti at malinis na results table para madaling basahin */
+            .result-table { width: 100% !important; color: black !important; margin-top: 15px !important; }
+            .result-table th, .result-table td { border: 1px solid #94a3b8 !important; color: black !important; padding: 8px !important; }
+            
+            /* Ginawang light gray ang header ng table para lutang ang mga text block */
+            .result-table th { background-color: #f1f5f9 !important; color: #0f172a !important; font-weight: bold !important; }
+            
+            /* Force black indicators para sa printing text styling */
+            .result-table td style { color: black !important; }
+            
+            #map { display: block !important; height: 380px !important; border: 1px solid #94a3b8 !important; page-break-inside: avoid; margin-top: 20px !important; }
+            .dev-footer { color: #475569 !important; border-top: 1px solid #cbd5e1 !important; margin-top: 40px; }
             .dev-name { color: black !important; }
         }
     </style>
@@ -59,7 +78,7 @@
 <body>
 
 <div class="container">
-    <h1>⚓ 3-SIGHT CELESTIAL FIX ENGINE <span style="font-size:12px; color:#10B981; vertical-align:middle;">[ULTIMATE LOG v3.5]</span></h1>
+    <h1>⚓ 3-SIGHT CELESTIAL FIX ENGINE <span style="font-size:12px; color:#10B981; vertical-align:middle;">[ULTIMATE LOG v3.51]</span></h1>
 
     <h3>📝 Vessel Voyage Log</h3>
     <div class="grid-2">
@@ -170,9 +189,9 @@
     </div>
 
     <div class="result-box" id="resultBox">
-        <h2>📊 Automated Sight Reduction Report</h2>
+        <h2 style="color: #38BDF8; margin-top: 0;" class="print-title">📊 Automated Sight Reduction Report</h2>
         
-        <div id="printMetadata" style="margin-bottom:15px; font-size:14px; line-height:1.6; display:none; border:1px dashed #475569; padding:10px; background-color:#1E293B;"></div>
+        <div id="printMetadata"></div>
         
         <table class="result-table">
             <thead>
@@ -194,7 +213,7 @@
             <tbody id="resultsTableBody"></tbody>
         </table>
 
-        <h3>🗺️ Real-Time 3-LOP Intersecting Chart Plot</h3>
+        <h3 style="margin-top: 25px;" class="print-title">🗺️ Real-Time 3-LOP Intersecting Chart Plot</h3>
         <div id="map"></div>
     </div>
 
@@ -270,7 +289,6 @@
         mapLayerGroup.clearLayers();
         let tbody = document.getElementById('resultsTableBody'); tbody.innerHTML = "";
         
-        // Get user entry metadata
         let vessel = document.getElementById('vesselName').value || "N/A";
         let voyage = document.getElementById('voyageNo').value || "N/A";
         let oow = document.getElementById('oowName').value || "N/A";
@@ -295,16 +313,16 @@
         let dip = (1.76 * Math.sqrt(hoe)) / 60;
         L.marker([apLat, apLon]).addTo(mapLayerGroup).bindPopup("<b>🌐 Assumed Position (AP)</b>").openPopup();
         
-        // 1. GENERATE DYNAMIC PRINT HEADER (For PDF Printer layout)
+        // BUILD PRINT LIGHT PANEL
         let metaHtml = `<b>VESSEL:</b> ${vessel} &nbsp;|&nbsp; <b>VOYAGE:</b> ${voyage} &nbsp;|&nbsp; <b>OOW:</b> ${oow}<br>
-                        <b>LOCAL DATE/TIME:</b> ${localTime} (ZD: ${zd}) &nbsp;|&nbsp; <b>CALCULATED UTC:</b> ${utcDate.toUTCString()}<br>
+                        <b>LOCAL DATE/TIME:</b> ${localTime} (ZD: ${zd}) &nbsp;|&nbsp; <b>UTC TIME:</b> ${utcDate.toUTCString()}<br>
                         <b>ASSUMED POSITION:</b> LAT ${latD}°${latM}'${latDir} , LON ${lonD}°${lonM}'${lonDir} &nbsp;|&nbsp; <b>HEIGHT OF EYE:</b> ${hoe}m (Dip: -${(dip*60).toFixed(1)}')<br>
                         <b>REMARKS:</b> ${remarks}`;
         let metaPrintBlock = document.getElementById('printMetadata');
         metaPrintBlock.innerHTML = metaHtml;
         metaPrintBlock.style.display = "block";
 
-        // 2. GENERATE STRING PAYLOAD FOR PLAIN TEXT (.TXT FILE) DOWNLOAD
+        // GENERATE TEXT FILE LOG
         globalTxtData = `================================================================================\n`;
         globalTxtData += `                  OFFICIAL AUTOMATED SIGHT REDUCTION REPORT\n`;
         globalTxtData += `================================================================================\n`;
@@ -333,7 +351,8 @@
             
             let latRad = apLat * Math.PI / 180; let decRad = data.dec * Math.PI / 180; let lhaRad = lha * Math.PI / 180;
             let sinHc = (Math.sin(latRad) * Math.sin(decRad)) + (Math.cos(latRad) * Math.cos(decRad) * Math.cos(lhaRad));
-            let hc = Math.asin(sinHc) * 180 / Math.PI;
+            let MathValueSin = sinHc; if(MathValueSin > 1) MathValueSin = 1; if(MathValueSin < -1) MathValueSin = -1;
+            let hc = Math.asin(MathValueSin) * 180 / Math.PI;
             
             let cosZ = (Math.sin(decRad) - (Math.sin(latRad) * sinHc)) / (Math.cos(latRad) * Math.cos(hc * Math.PI / 180));
             if (cosZ > 1) cosZ = 1; if (cosZ < -1) cosZ = -1;
@@ -342,7 +361,6 @@
             
             let intercept = (ho - hc) * 60; let dirTxt = intercept >= 0 ? "TOWARDS" : "AWAY";
             
-            // Render on Live App Interface View Row
             tbody.innerHTML += `<tr>
                 <td style="font-weight:bold; color:${colors[i-1]}">Sight ${i}</td>
                 <td><b>${data.name}</b></td>
@@ -358,7 +376,6 @@
                 <td style="font-weight:bold; color:#F59E0B">${zn.toFixed(1)}° T</td>
             </tr>`;
             
-            // Append complete algebraic calculations to Text file output
             globalTxtData += `[SIGHT #${i} REDUCTION DETAILS - ${data.name}]\n`;
             globalTxtData += `  -> Sextant Altitude (Hs) : ${hsDeg}° ${hsMin}'\n`;
             globalTxtData += `  -> Index Error (IE)      : ${ieVal >= 0 ? '+' : ''}${ieVal}'\n`;
@@ -373,7 +390,7 @@
             
             plotLopVector(apLat, apLon, zn, intercept, colors[i-1], data.name);
         }
-        globalTxtData += `\nGenerated Engine v3.5 | Developer: 2/O Renante Fullo | Marine Solutions 2026\n`;
+        globalTxtData += `\nGenerated Engine v3.51 | Developer: 2/O Renante Fullo | Marine Solutions 2026\n`;
         document.getElementById('resultBox').style.display = "block";
         map.setView([apLat, apLon], 8); map.invalidateSize();
     }
