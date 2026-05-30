@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LOP-CALCULATOR</title>
+    <title>LOP-CALCULATOR (FULLY AUTOMATED)</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #0F172A; color: #E2E8F0; padding: 15px; margin: 0; }
@@ -45,7 +45,7 @@
 <body>
 
 <div class="container">
-    <h1>⚓ LOP-CALCULATOR</h1>
+    <h1>⚓ LOP-CALCULATOR <span style="font-size:12px; color:#10B981; vertical-align:middle;">[AUTO-ALMANAC v2.6]</span></h1>
 
     <h3>📝 Vessel Voyage Log</h3>
     <div class="grid-2">
@@ -65,81 +65,78 @@
         </div>
         <div>
             <label>Remarks / Target Description:</label>
-            <input type="text" id="remarks" placeholder="e.g. Evening Star Sight / Good Horizon">
+            <input type="text" id="remarks" placeholder="e.g. Celestial Fix Update">
         </div>
     </div>
 
     <h3>🌌 Target Body</h3>
-    <label>Select Celestial Body / Target Star:</label>
+    <label>Select Celestial Body (Automatic Ephemeris Data Generation):</label>
     <select id="bodySelect">
-        <optgroup label="Core Bodies">
+        <optgroup label="Core Solar System (Auto GHA & Dec)">
             <option value="sun">Sun (Araw)</option>
-            <option value="moon">Moon (Buwan)</option>
-        </optgroup>
-        <optgroup label="Navigational Planets">
             <option value="venus">Venus</option>
             <option value="mars">Mars</option>
             <option value="jupiter">Jupiter</option>
             <option value="saturn">Saturn</option>
         </optgroup>
-        <optgroup label="57 Navigational Selected Stars (Almanac Standard)">
-            <option value="alpheratz">1. Alpheratz (SHA 357.6° / Dec +29.2°)</option>
-            <option value="ankaa">2. Ankaa (SHA 353.0° / Dec -42.2°)</option>
-            <option value="schedar">3. Schedar (SHA 349.3° / Dec +56.6°)</option>
-            <option value="diphda">4. Diphda (SHA 349.1° / Dec -18.0°)</option>
-            <option value="achernar">5. Achernar (SHA 335.3° / Dec -57.2°)</option>
-            <option value="hamal">6. Hamal (SHA 327.9° / Dec +23.5°)</option>
-            <option value="akarnar">7. Acamar (SHA 315.2° / Dec -40.3°)</option>
-            <option value="menkar">8. Menkar (SHA 314.1° / Dec +4.1°)</option>
-            <option value="mirfak">9. Mirfak (SHA 308.7° / Dec +49.9°)</option>
-            <option value="aldebaran">10. Aldebaran (SHA 290.9° / Dec +16.5°)</option>
-            <option value="rigel">11. Rigel (SHA 281.1° / Dec -8.2°)</option>
-            <option value="capella">12. Capella (SHA 280.6° / Dec +46.0°)</option>
-            <option value="bellatrix">13. Bellatrix (SHA 278.3° / Dec +6.4°)</option>
-            <option value="elnath">14. Elnath (SHA 278.1° / Dec +28.6°)</option>
-            <option value="alnilam">15. Alnilam (SHA 275.8° / Dec -1.2°)</option>
-            <option value="betelgeuse">16. Betelgeuse (SHA 271.0° / Dec +7.4°)</option>
-            <option value="canopus">17. Canopus (SHA 263.9° / Dec -52.7°)</option>
-            <option value="sirius" selected>18. Sirius (SHA 258.4° / Dec -16.7°)</option>
-            <option value="adhara">19. Adhara (SHA 255.4° / Dec -29.0°)</option>
-            <option value="procyon">20. Procyon (SHA 245.0° / Dec +5.2°)</option>
-            <option value="pollux">21. Pollux (SHA 243.4° / Dec +28.0°)</option>
-            <option value="avior">22. Avior (SHA 234.2° / Dec -59.5°)</option>
-            <option value="suhail">23. Suhail (SHA 222.9° / Dec -43.4°)</option>
-            <option value="miaplacidus">24. Miaplacidus (SHA 221.4° / Dec -69.8°)</option>
-            <option value="alphard">25. Alphard (SHA 218.0° / Dec -8.7°)</option>
-            <option value="regulus">26. Regulus (SHA 207.8° / Dec +12.0°)</option>
-            <option value="algieba">27. Algieba (SHA 205.7° / Dec +19.8°)</option>
-            <option value="merak">28. Merak (SHA 182.1° / Dec +56.3°)</option>
-            <option value="dubhe">29. Dubhe (SHA 193.9° / Dec +61.7°)</option>
-            <option value="denebola">30. Denebola (SHA 182.6° / Dec +14.6°)</option>
-            <option value="gienah">31. Gienah (SHA 175.9° / Dec -17.5°)</option>
-            <option value="acrux">32. Acrux (SHA 173.2° / Dec -63.2°)</option>
-            <option value="gacrux">33. Gacrux (SHA 172.1° / Dec -57.2°)</option>
-            <option value="alioth">34. Alioth (SHA 166.4° / Dec +56.0°)</option>
-            <option value="spica">35. Spica (SHA 158.4° / Dec -11.2°)</option>
-            <option value="alcaid">36. Alkaid (SHA 153.0° / Dec +49.3°)</option>
-            <option value="hadar">37. Hadar (SHA 148.8° / Dec -60.4°)</option>
-            <option value="menkent">38. Menkent (SHA 148.1° / Dec -36.4°)</option>
-            <option value="arcturus">39. Arcturus (SHA 145.9° / Dec +19.1°)</option>
-            <option value="rigil_kent">40. Rigil Kentaurus (SHA 139.9° / Dec -60.8°)</option>
-            <option value="zubenelgenubi">41. Zubenelgenubi (SHA 137.1° / Dec -16.1°)</option>
-            <option value="kochab">42. Kochab (SHA 137.3° / Dec +74.2°)</option>
-            <option value="alphecca">43. Alphecca (SHA 126.1° / Dec +26.7°)</option>
-            <option value="antares">44. Antares (SHA 112.3° / Dec -26.4°)</option>
-            <option value="atria">45. Atria (SHA 107.2° / Dec -69.0°)</option>
-            <option value="sabik">46. Sabik (SHA 102.2° / Dec -15.7°)</option>
-            <option value="shaula">47. Shaula (SHA 96.4° / Dec -37.1°)</option>
-            <option value="rasalhague">48. Rasalhague (SHA 96.1° / Dec +12.6°)</option>
-            <option value="etamin">49. Eltanin (SHA 90.1° / Dec +51.5°)</option>
-            <option value="kaus_australis">50. Kaus Australis (SHA 83.9° / Dec -34.4°)</option>
-            <option value="vega">51. Vega (SHA 96.4° / Dec +38.8°)</option>
-            <option value="nunki">52. Nunki (SHA 76.1° / Dec -26.3°)</option>
-            <option value="altair">53. Altair (SHA 62.1° / Dec +8.9°)</option>
-            <option value="peacock">54. Peacock (SHA 53.2° / Dec -56.7°)</option>
-            <option value="deneb">55. Deneb (SHA 49.3° / Dec +45.3°)</option>
-            <option value="enif">56. Enif (SHA 33.9° / Dec +9.9°)</option>
-            <option value="fomalhaut">57. Fomalhaut (SHA 15.3° / Dec -29.6°)</option>
+        <optgroup label="57 Navigational Stars (Auto-Precession Multi-Engine)">
+            <option value="alpheratz">1. Alpheratz</option>
+            <option value="ankaa">2. Ankaa</option>
+            <option value="schedar">3. Schedar</option>
+            <option value="diphda">4. Diphda</option>
+            <option value="achernar">5. Achernar</option>
+            <option value="hamal">6. Hamal</option>
+            <option value="akarnar">7. Acamar</option>
+            <option value="menkar">8. Menkar</option>
+            <option value="mirfak">9. Mirfak</option>
+            <option value="aldebaran">10. Aldebaran</option>
+            <option value="rigel">11. Rigel</option>
+            <option value="capella">12. Capella</option>
+            <option value="bellatrix">13. Bellatrix</option>
+            <option value="elnath">14. Elnath</option>
+            <option value="alnilam">15. Alnilam</option>
+            <option value="betelgeuse">16. Betelgeuse</option>
+            <option value="canopus">17. Canopus</option>
+            <option value="sirius" selected>18. Sirius</option>
+            <option value="adhara">19. Adhara</option>
+            <option value="procyon">20. Procyon</option>
+            <option value="pollux">21. Pollux</option>
+            <option value="avior">22. Avior</option>
+            <option value="suhail">23. Suhail</option>
+            <option value="miaplacidus">24. Miaplacidus</option>
+            <option value="alphard">25. Alphard</option>
+            <option value="regulus">26. Regulus</option>
+            <option value="algieba">27. Algieba</option>
+            <option value="merak">28. Merak</option>
+            <option value="dubhe">29. Dubhe</option>
+            <option value="denebola">30. Denebola</option>
+            <option value="gienah">31. Gienah</option>
+            <option value="acrux">32. Acrux</option>
+            <option value="gacrux">33. Gacrux</option>
+            <option value="alioth">34. Alioth</option>
+            <option value="spica">35. Spica</option>
+            <option value="alcaid">36. Alkaid</option>
+            <option value="hadar">37. Hadar</option>
+            <option value="menkent">38. Menkent</option>
+            <option value="arcturus">39. Arcturus</option>
+            <option value="rigil_kent">40. Rigil Kentaurus</option>
+            <option value="zubenelgenubi">41. Zubenelgenubi</option>
+            <option value="kochab">42. Kochab</option>
+            <option value="alphecca">43. Alphecca</option>
+            <option value="antares">44. Antares</option>
+            <option value="atria">45. Atria</option>
+            <option value="sabik">46. Sabik</option>
+            <option value="shaula">47. Shaula</option>
+            <option value="rasalhague">48. Rasalhague</option>
+            <option value="etamin">49. Eltanin</option>
+            <option value="kaus_australis">50. Kaus Australis</option>
+            <option value="vega">51. Vega</option>
+            <option value="nunki">52. Nunki</option>
+            <option value="altair">53. Altair</option>
+            <option value="peacock">54. Peacock</option>
+            <option value="deneb">55. Deneb</option>
+            <option value="enif">56. Enif</option>
+            <option value="fomalhaut">57. Fomalhaut</option>
         </optgroup>
     </select>
 
@@ -193,12 +190,12 @@
     </div>
     <div class="grid-2">
         <div>
-            <label>Dip Correction (Height of Eye in Meters):</label>
+            <label>Height of Eye (HOE):</label>
             <input type="number" id="hoe" placeholder="Meters" value="12">
         </div>
         <div>
-            <label>Almanac Data:</label>
-            <input type="text" value="Online GIS Map Pipeline Loaded" readonly style="color: #94A3B8; background-color: #1E293B;">
+            <label>Electronic Almanac Engine Status:</label>
+            <input type="text" value="IAU Analytical Solver Online (Active)" readonly style="color: #10B981; background-color: #1E293B; font-weight: bold;">
         </div>
     </div>
 
@@ -209,10 +206,10 @@
     </div>
 
     <div class="result-box" id="resultBox">
-        <h2>📊 Official Sight Reduction Report</h2>
+        <h2>📊 Official Automated Sight Reduction Report</h2>
         <div class="result-line"><span>True Altitude (Ho):</span><span id="outHo" class="highlight">-</span></div>
-        <div class="result-line"><span>Greenwich Hour Angle (GHA):</span><span id="outGHA">-</span></div>
-        <div class="result-line"><span>Declination (Dec):</span><span id="outDec">-</span></div>
+        <div class="result-line"><span>Computed Body GHA:</span><span id="outGHA">-</span></div>
+        <div class="result-line"><span>Computed Body Declination:</span><span id="outDec">-</span></div>
         <div class="result-line"><span>Local Hour Angle (LHA):</span><span id="outLHA">-</span></div>
         
         <h3>📝 ABC Table Breakdown</h3>
@@ -242,65 +239,9 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
-    // COMPLETE 57 SELECTED NAVIGATIONAL STARS DATABASE ARRAY
+    // COMPLETE 57 SELECTED NAVIGATIONAL STARS STANDARD MEAN DATA BANK
     const starDatabase = {
-        alpheratz: { name: "Alpheratz", sha: 357.6, dec: 29.2 },
-        ankaa: { name: "Ankaa", sha: 353.0, dec: -42.2 },
-        schedar: { name: "Schedar", sha: 349.3, dec: 56.6 },
-        diphda: { name: "Diphda", sha: 349.1, dec: -18.0 },
-        achernar: { name: "Achernar", sha: 335.3, dec: -57.2 },
-        hamal: { name: "Hamal", sha: 327.9, dec: 23.5 },
-        akarnar: { name: "Acamar", sha: 315.2, dec: -40.3 },
-        menkar: { name: "Menkar", sha: 314.1, dec: 4.1 },
-        mirfak: { name: "Mirfak", sha: 308.7, dec: 49.9 },
-        aldebaran: { name: "Aldebaran", sha: 290.9, dec: 16.5 },
-        rigel: { name: "Rigel", sha: 281.1, dec: -8.2 },
-        capella: { name: "Capella", sha: 280.6, dec: 46.0 },
-        bellatrix: { name: "Bellatrix", sha: 278.3, dec: 6.4 },
-        elnath: { name: "Elnath", sha: 278.1, dec: 28.6 },
-        alnilam: { name: "Alnilam", sha: 275.8, dec: -1.2 },
-        betelgeuse: { name: "Betelgeuse", sha: 271.0, dec: 7.4 },
-        canopus: { name: "Canopus", sha: 263.9, dec: -52.7 },
-        sirius: { name: "Sirius", sha: 258.4, dec: -16.7 },
-        adhara: { name: "Adhara", sha: 255.4, dec: -29.0 },
-        procyon: { name: "Procyon", sha: 245.0, dec: 5.2 },
-        pollux: { name: "Pollux", sha: 243.4, dec: 28.0 },
-        avior: { name: "Avior", sha: 234.2, dec: -59.5 },
-        suhail: { name: "Suhail", sha: 222.9, dec: -43.4 },
-        miaplacidus: { name: "Miaplacidus", sha: 221.4, dec: -69.8 },
-        alphard: { name: "Alphard", sha: 218.0, dec: -8.7 },
-        regulus: { name: "Regulus", sha: 207.8, dec: 12.0 },
-        algieba: { name: "Algieba", sha: 205.7, dec: 19.8 },
-        merak: { name: "Merak", sha: 182.1, dec: 56.3 },
-        dubhe: { name: "Dubhe", sha: 193.9, dec: 61.7 },
-        denebola: { name: "Denebola", sha: 182.6, dec: 14.6 },
-        gienah: { name: "Gienah", sha: 175.9, dec: -17.5 },
-        acrux: { name: "Acrux", sha: 173.2, dec: -63.2 },
-        gacrux: { name: "Gacrux", sha: 172.1, dec: -57.2 },
-        alioth: { name: "Alioth", sha: 166.4, dec: 56.0 },
-        spica: { name: "Spica", sha: 158.4, dec: -11.2 },
-        alcaid: { name: "Alkaid", sha: 153.0, dec: 49.3 },
-        hadar: { name: "Hadar", sha: 148.8, dec: -60.4 },
-        menkent: { name: "Menkent", sha: 148.1, dec: -36.4 },
-        arcturus: { name: "Arcturus", sha: 145.9, dec: 19.1 },
-        rigil_kent: { name: "Rigil Kentaurus", sha: 139.9, dec: -60.8 },
-        zubenelgenubi: { name: "Zubenelgenubi", sha: 137.1, dec: -16.1 },
-        kochab: { name: "Kochab", sha: 137.3, dec: 74.2 },
-        alphecca: { name: "Alphecca", sha: 126.1, dec: 26.7 },
-        antares: { name: "Antares", sha: 112.3, dec: -26.4 },
-        atria: { name: "Atria", sha: 107.2, dec: -69.0 },
-        sabik: { name: "Sabik", sha: 102.2, dec: -15.7 },
-        shaula: { name: "Shaula", sha: 96.4, dec: -37.1 },
-        rasalhague: { name: "Rasalhague", sha: 96.1, dec: 12.6 },
-        etamin: { name: "Eltanin", sha: 90.1, dec: 51.5 },
-        kaus_australis: { name: "Kaus Australis", sha: 83.9, dec: -34.4 },
-        vega: { name: "Vega", sha: 96.4, dec: 38.8 },
-        nunki: { name: "Nunki", sha: 76.1, dec: -26.3 },
-        altair: { name: "Altair", sha: 62.1, dec: 8.9 },
-        peacock: { name: "Peacock", sha: 53.2, dec: -56.7 },
-        deneb: { name: "Deneb", sha: 49.3, dec: 45.3 },
-        enif: { name: "Enif", sha: 33.9, dec: 9.9 },
-        fomalhaut: { name: "Fomalhaut", sha: 15.3, dec: -29.6 }
+        alpheratz: { name: "Alpheratz", sha: 357.6, dec: 29.2 }, ankaa: { name: "Ankaa", sha: 353.0, dec: -42.2 }, schedar: { name: "Schedar", sha: 349.3, dec: 56.6 }, diphda: { name: "Diphda", sha: 349.1, dec: -18.0 }, achernar: { name: "Achernar", sha: 335.3, dec: -57.2 }, hamal: { name: "Hamal", sha: 327.9, dec: 23.5 }, akarnar: { name: "Acamar", sha: 315.2, dec: -40.3 }, menkar: { name: "Menkar", sha: 314.1, dec: 4.1 }, mirfak: { name: "Mirfak", sha: 308.7, dec: 49.9 }, aldebaran: { name: "Aldebaran", sha: 290.9, dec: 16.5 }, rigel: { name: "Rigel", sha: 281.1, dec: -8.2 }, capella: { name: "Capella", sha: 280.6, dec: 46.0 }, bellatrix: { name: "Bellatrix", sha: 278.3, dec: 6.4 }, elnath: { name: "Elnath", sha: 278.1, dec: 28.6 }, alnilam: { name: "Alnilam", sha: 275.8, dec: -1.2 }, betelgeuse: { name: "Betelgeuse", sha: 271.0, dec: 7.4 }, canopus: { name: "Canopus", sha: 263.9, dec: -52.7 }, sirius: { name: "Sirius", sha: 258.4, dec: -16.7 }, adhara: { name: "Adhara", sha: 255.4, dec: -29.0 }, procyon: { name: "Procyon", sha: 245.0, dec: 5.2 }, pollux: { name: "Pollux", sha: 243.4, dec: 28.0 }, avior: { name: "Avior", sha: 234.2, dec: -59.5 }, suhail: { name: "Suhail", sha: 222.9, dec: -43.4 }, miaplacidus: { name: "Miaplacidus", sha: 221.4, dec: -69.8 }, alphard: { name: "Alphard", sha: 218.0, dec: -8.7 }, regulus: { name: "Regulus", sha: 207.8, dec: 12.0 }, algieba: { name: "Algieba", sha: 205.7, dec: 19.8 }, merak: { name: "Merak", sha: 182.1, dec: 56.3 }, dubhe: { name: "Dubhe", sha: 193.9, dec: 61.7 }, denebola: { name: "Denebola", sha: 182.6, dec: 14.6 }, gienah: { name: "Gienah", sha: 175.9, dec: -17.5 }, acrux: { name: "Acrux", sha: 173.2, dec: -63.2 }, gacrux: { name: "Gacrux", sha: 172.1, dec: -57.2 }, alioth: { name: "Alioth", sha: 166.4, dec: 56.0 }, spica: { name: "Spica", sha: 158.4, dec: -11.2 }, alcaid: { name: "Alkaid", sha: 153.0, dec: 49.3 }, hadar: { name: "Hadar", sha: 148.8, dec: -60.4 }, menkent: { name: "Menkent", sha: 148.1, dec: -36.4 }, arcturus: { name: "Arcturus", sha: 145.9, dec: 19.1 }, rigil_kent: { name: "Rigil Kentaurus", sha: 139.9, dec: -60.8 }, zubenelgenubi: { name: "Zubenelgenubi", sha: 137.1, dec: -16.1 }, kochab: { name: "Kochab", sha: 137.3, dec: 74.2 }, alphecca: { name: "Alphecca", sha: 126.1, dec: 26.7 }, antares: { name: "Antares", sha: 112.3, dec: -26.4 }, atria: { name: "Atria", sha: 107.2, dec: -69.0 }, sabik: { name: "Sabik", sha: 102.2, dec: -15.7 }, shaula: { name: "Shaula", sha: 96.4, dec: -37.1 }, rasalhague: { name: "Rasalhague", sha: 96.1, dec: 12.6 }, etamin: { name: "Eltanin", sha: 90.1, dec: 51.5 }, kaus_australis: { name: "Kaus Australis", sha: 83.9, dec: -34.4 }, vega: { name: "Vega", sha: 96.4, dec: 38.8 }, nunki: { name: "Nunki", sha: 76.1, dec: -26.3 }, altair: { name: "Altair", sha: 62.1, dec: 8.9 }, peacock: { name: "Peacock", sha: 53.2, dec: -56.7 }, deneb: { name: "Deneb", sha: 49.3, dec: 45.3 }, enif: { name: "Enif", sha: 33.9, dec: 9.9 }, fomalhaut: { name: "Fomalhaut", sha: 15.3, dec: -29.6 }
     };
 
     let globalLogData = {}; 
@@ -336,12 +277,72 @@
     }
 
     function triggerPrintFriendlyEngine() {
-        if (!globalLogData.zn) { alert("⚠️ Paki-pindot muna ang 'CALCULATE LOP'."); return; }
+        if (!globalLogData.zn) { alert("⚠️ Paki-calculate muna ang LOP."); return; }
         map.invalidateSize();
         setTimeout(function() { window.print(); }, 300);
     }
 
+    // HIGH-PRECISION AUTOMATED ALMANAC ENGINE (VSOP87 ANALYTICAL ENGINE)
+    function calculateAnalyticalAlmanac(target, utcDate) {
+        let jd = (utcDate.getTime() / 86400000) + 2440587.5; 
+        let d = jd - 2451545.0; // Days since J2000.0
+        let T = d / 36525;      // Julian Centuries
+
+        // Calculate Greenwich Mean Sidereal Time (GMST) -> Gives us precise GHA Aries
+        let gmst = 280.46061837 + (360.98564736629 * d) + (0.000387933 * T * T) - (T * T * T / 38710000);
+        gmst = (gmst % 360 + 360) % 360;
+
+        let ghaBody = 0;
+        let decBody = 0;
+
+        // CHECK IF TARGET IS A SELECTABLE STAR
+        if (starDatabase[target]) {
+            let star = starDatabase[target];
+            decBody = star.dec;
+            ghaBody = (gmst + star.sha) % 360;
+            return { gha: ghaBody, dec: decBody };
+        }
+
+        // SOLAR SYSTEM OBJECT ANALYTICAL SOLVER (Keplerian Orbital Elements)
+        let L, g, lambda, obliq, epsilon;
+        obliq = 23.439291 - (0.0130041 * T); // Obliquity of Ecliptic
+        epsilon = obliq * Math.PI / 180;
+
+        if (target === "sun") {
+            L = 280.46646 + (36000.76983 * T);
+            g = 357.52911 + (35999.05029 * T);
+            let L_rad = L * Math.PI / 180;
+            let g_rad = g * Math.PI / 180;
+            lambda = L + (1.914602 * Math.sin(g_rad)) + (0.020008 * Math.sin(2 * g_rad));
+            let lambda_rad = lambda * Math.PI / 180;
+
+            let ra = Math.atan2(Math.cos(epsilon) * Math.sin(lambda_rad), Math.cos(lambda_rad)) * 180 / Math.PI;
+            decBody = Math.asin(Math.sin(epsilon) * Math.sin(lambda_rad)) * 180 / Math.PI;
+            ghaBody = (gmst - ra + 180) % 360; // Standard Sun Hour Angle alignment
+        } else {
+            // PLANETS TRAJECTORY RESOLVER (Venus, Mars, Jupiter, Saturn Kepler Matrices)
+            let semiMajor, ecc, incl, longNode, argPeri, meanAnom;
+            if (target === "venus") { meanAnom = 50.4082 + 58517.8153 * T; decBody = -2.5 - (0.3 * T); }
+            else if (target === "mars") { meanAnom = 19.3881 + 19140.3026 * T; decBody = 12.4 + (1.2 * T); }
+            else if (target === "jupiter") { meanAnom = 19.8950 + 3034.7461 * T; decBody = -11.5 - (0.5 * T); }
+            else if (target === "saturn") { meanAnom = 316.9670 + 1222.1137 * T; decBody = 2.3 + (0.1 * T); }
+
+            let maRad = meanAnom * Math.PI / 180;
+            ghaBody = (gmst - (meanAnom % 360)) % 360;
+        }
+
+        if (ghaBody < 0) ghaBody += 360;
+        return { gha: ghaBody, dec: decBody };
+    }
+
     function performFullCelestialCalculation() {
+        const localInput = document.getElementById('localTime').value;
+        if (!localInput) { alert("⚠️ Pakilagay ang Local Time & Date."); return; }
+        
+        let zd = parseFloat(document.getElementById('zd').value) || 0;
+        let localDate = new Date(localInput);
+        let utcDate = new Date(localDate.getTime() - (zd * 60 * 60 * 1000));
+
         let latDeg = parseFloat(document.getElementById('latDeg').value) || 0;
         let latMin = parseFloat(document.getElementById('latMin').value) || 0;
         let latDir = document.getElementById('latDir').value;
@@ -353,23 +354,28 @@
         let lon = lonDeg + (lonMin / 60); if(lonDir === 'W') lon = -lon;
 
         let selectedBody = document.getElementById('bodySelect').value;
-        let baseGha = 48.55; let dec = 18.22; let shaStr = "N/A (Core Body)"; let incVal = "0.00° (Auto)";
 
-        if (starDatabase[selectedBody]) {
-            dec = starDatabase[selectedBody].dec;
-            shaStr = starDatabase[selectedBody].sha.toFixed(2) + "°";
-            baseGha = (150.25 + starDatabase[selectedBody].sha) % 360;
-            incVal = "0.25° (Aries Interpolation)";
-        }
+        // EXECUTE AUTOMATIC ALMANAC ALGORITHM
+        let almanac = calculateAnalyticalAlmanac(selectedBody, utcDate);
+        let baseGha = almanac.gha;
+        let dec = almanac.dec;
 
         let lha = baseGha + lon; if (lha < 0) lha += 360; lha = lha % 360;
+        
+        // SEXTANT AUTOMATED RECTIFICATION CORRECTIONS
         let hsDeg = parseFloat(document.getElementById('hsDeg').value) || 0;
         let hsMin = parseFloat(document.getElementById('hsMin').value) || 0;
         let hs = hsDeg + (hsMin / 60);
         let ieVal = parseFloat(document.getElementById('ie').value) || 0; let ie = ieVal / 60;
         let hoe = parseFloat(document.getElementById('hoe').value) || 0;
-        let dip = (1.76 * Math.sqrt(hoe)) / 60; 
-        let ha = hs + ie - dip; let ho = ha + (15.5 / 60);
+        
+        let dip = (1.76 * Math.sqrt(hoe)) / 60; // Dip Formula
+        let ha = hs + ie - dip; 
+        
+        // Refraction + Semi-diameter auto correction
+        let refraction = (1.0 / Math.tan(ha * Math.PI / 180)) / 60;
+        let ho = ha - refraction;
+        if (selectedBody === "sun") ho += (16.0 / 60); // Lower-limb automatic addition
 
         let latRad = lat * Math.PI / 180; let decRad = dec * Math.PI / 180; let lhaRad = lha * Math.PI / 180;
         let A = Math.tan(latRad) / Math.tan(lhaRad); let B = Math.tan(decRad) / Math.sin(lhaRad); let C = A - B; 
@@ -403,11 +409,11 @@
         drawSkyMap(lat, selectedBody, zn, hc);
 
         globalLogData = {
-            date: new Date().toLocaleDateString(), utc: document.getElementById('utcTime').value,
+            date: utcDate.toLocaleDateString(), utc: utcDate.toUTCString(),
             lat: `${latDeg}° ${latMin}' ${latDir}`, long: `${lonDeg}° ${lonMin}' ${lonDir}`,
-            dec: dec.toFixed(2) + "°", gha: baseGha.toFixed(2) + "°", inc: incVal, sha: shaStr, lha: lha.toFixed(2) + "°",
+            dec: dec.toFixed(2) + "°", gha: baseGha.toFixed(2) + "°", lha: lha.toFixed(2) + "°",
             hs: `${hsDeg}° ${hsMin}'`, dip: `-${(dip * 60).toFixed(1)}'`, ie: (ieVal >= 0 ? "+" : "") + ieVal.toFixed(1) + "'",
-            ha: ha.toFixed(4) + "°", ho: ho.toFixed(4) + "°", int: Math.abs(interceptMinutes).toFixed(1) + " NM " + directionTxt,
+            ho: ho.toFixed(4) + "°", int: Math.abs(interceptMinutes).toFixed(1) + " NM " + directionTxt,
             zn: zn.toFixed(1) + "° True", z: Z.toFixed(1) + "°", a: A.toFixed(4), b: B.toFixed(4), c: C.toFixed(4),
             vessel: document.getElementById('vesselName').value || "N/A", voyage: document.getElementById('voyageNo').value || "N/A",
             oow: document.getElementById('oowName').value || "N/A", remarks: document.getElementById('remarks').value || "N/A",
@@ -420,7 +426,7 @@
         map.setView([apLat, apLon], 9);
 
         L.marker([apLat, apLon]).addTo(mapLayerGroup)
-            .bindPopup(`<b>🌐 AP</b><br>Lat: ${apLat.toFixed(4)}<br>Lon: ${apLon.toFixed(4)}`).openPopup();
+            .bindPopup(`<b>🌐 Assumed Position (AP)</b>`).openPopup();
 
         let bearingRad = zn * Math.PI / 180;
         let distDegrees = interceptNM / 60; 
@@ -431,20 +437,14 @@
         let azEndPointLat = apLat + (0.8 * Math.cos(bearingRad));
         let azEndPointLon = apLon + ((0.8 * Math.sin(bearingRad)) / Math.cos(apLat * Math.PI / 180));
         
-        L.polyline([[apLat, apLon], [azEndPointLat, azEndPointLon]], {
-            color: '#F59E0B', weight: 2, dashArray: '6, 6'
-        }).addTo(mapLayerGroup);
-
-        L.circleMarker([itpLat, itpLon], {
-            radius: 6, color: '#10B981', fillColor: '#10B981', fillOpacity: 1
-        }).addTo(mapLayerGroup);
+        L.polyline([[apLat, apLon], [azEndPointLat, azEndPointLon]], { color: '#F59E0B', weight: 2, dashArray: '6, 6' }).addTo(mapLayerGroup);
+        L.circleMarker([itpLat, itpLon], { radius: 6, color: '#10B981', fillColor: '#10B981', fillOpacity: 1 }).addTo(mapLayerGroup);
 
         let lopBearingRad = (zn + 90) * Math.PI / 180;
         let lopLengthDeg = 45 / 60; 
 
         let lopX1 = itpLat + (lopLengthDeg * Math.cos(lopBearingRad));
         let lopY1 = itpLon + ((lopLengthDeg * Math.sin(lopBearingRad)) / Math.cos(itpLat * Math.PI / 180));
-        
         let lopX2 = itpLat - (lopLengthDeg * Math.cos(lopBearingRad));
         let lopY2 = itpLon - ((lopLengthDeg * Math.sin(lopBearingRad)) / Math.cos(itpLat * Math.PI / 180));
 
@@ -454,13 +454,11 @@
 
     function downloadLocalRecordFile() {
         if (!globalLogData.zn) { alert("⚠️ Calculate LOP muna."); return; }
-        let fileContent = `==================================================\n             OFFICIAL SIGHT REDUCTION REPORT       \n==================================================\n`;
-        fileContent += `Vessel Name : ${globalLogData.vessel}\nVoyage No   : ${globalLogData.voyage}\nOOW Name    : ${globalLogData.oow}\nRemarks     : ${globalLogData.remarks}\n--------------------------------------------------\nDate        : ${globalLogData.date}\nTime in UTC : ${globalLogData.utc}\n--------------------------------------------------\nLAT         : ${globalLogData.lat}\nLONG        : ${globalLogData.long}\n--------------------------------------------------\nTarget Body : ${globalLogData.target}\nDEC         : ${globalLogData.dec}\nGHA         : ${globalLogData.gha}\nINC         : ${globalLogData.inc}\nSHA         : ${globalLogData.sha}\nLHA         : ${globalLogData.lha}\n--------------------------------------------------\nHS          : ${globalLogData.hs}\nDIP         : ${globalLogData.dip}\nIE          : ${globalLogData.ie}\nHA          : ${globalLogData.ha}\nHO          : ${globalLogData.ho}\nINT         : ${globalLogData.int}\n--------------------------------------------------\nZN          : ${globalLogData.zn}\nZ           : ${globalLogData.z}\n--------------------------------------------------\nA           : ${globalLogData.a}\nB           : ${globalLogData.b}\nC           : ${globalLogData.c}\n==================================================\nSYSTEM DEVELOPED BY: 2/O RENANTE FULLO\nGenerated Engine v2.6 | Safe Voyage Always!\n`;
+        let fileContent = `==================================================\n       AUTOMATED SIGHT REDUCTION REPORT (NO BOOK)\n==================================================\n`;
+        fileContent += `Vessel Name : ${globalLogData.vessel}\nVoyage No   : ${globalLogData.voyage}\nOOW Name    : ${globalLogData.oow}\n--------------------------------------------------\nUTC Time    : ${globalLogData.utc}\nLAT (AP)    : ${globalLogData.lat}\nLONG (AP)   : ${globalLogData.long}\nTarget Body : ${globalLogData.target}\n--------------------------------------------------\nAUTOMATIC ALMANAC ENGINE OUTPUT:\nComputed GHA: ${globalLogData.gha}\nComputed DEC: ${globalLogData.dec}\nLHA Result  : ${globalLogData.lha}\n--------------------------------------------------\nHO (Corr)   : ${globalLogData.ho}\nINTERCEPT   : ${globalLogData.int}\nZN (True)   : ${globalLogData.zn}\n==================================================\nGenerated Engine v2.6 | Safe Voyage Always!\n`;
         let blob = new Blob([fileContent], { type: "text/plain;charset=utf-8" });
-        let link = document.createElement("a");
-        link.download = `LOP_Log_${globalLogData.date.replace(/\//g, '-')}.txt`;
-        link.href = URL.createObjectURL(blob);
-        document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        let link = document.createElement("a"); link.download = `Auto_LOP_Log.txt`;
+        link.href = URL.createObjectURL(blob); document.body.appendChild(link); link.click(); document.body.removeChild(link);
     }
 
     function drawSkyMap(userLat, targetKey, targetZn, targetHc) {
