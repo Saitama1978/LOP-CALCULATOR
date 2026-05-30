@@ -11,8 +11,8 @@
         h3 { color: #0EA5E9; border-left: 4px solid #0EA5E9; padding-left: 8px; margin-top: 20px; font-size: 16px; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         label { display: block; margin-top: 10px; font-size: 13px; color: #94A3B8; font-weight: bold; }
-        input, select { width: 100%; padding: 10px; margin-top: 5px; background-color: #334155; border: 1px solid #475569; border-radius: 6px; color: white; font-size: 15px; box-sizing: border-box; }
-        input:focus, select:focus { border-color: #38BDF8; outline: none; }
+        input, select, textarea { width: 100%; padding: 10px; margin-top: 5px; background-color: #334155; border: 1px solid #475569; border-radius: 6px; color: white; font-size: 15px; box-sizing: border-box; }
+        input:focus, select:focus, textarea:focus { border-color: #38BDF8; outline: none; }
         .row-inline { display: flex; gap: 10px; align-items: center; }
         button { width: 100%; background-color: #0EA5E9; color: #0F172A; border: none; padding: 14px; border-radius: 6px; font-size: 16px; font-weight: bold; margin-top: 25px; cursor: pointer; transition: 0.2s; }
         button:hover { background-color: #38BDF8; }
@@ -24,7 +24,7 @@
         @media print {
             body { background-color: white; color: black; }
             .container { box-shadow: none; background-color: white; width: 100%; max-width: 100%; padding: 0; }
-            button, select, input { display: none; }
+            button, select, input, textarea { display: none; }
             .result-box { display: block !important; border: 1px solid black; }
         }
     </style>
@@ -34,6 +34,29 @@
 <div class="container">
     <h1>⚓ LOP-CALCULATOR</h1>
 
+    <h3>📝 Vessel Voyage Log</h3>
+    <div class="grid-2">
+        <div>
+            <label>Vessel Name:</label>
+            <input type="text" id="vesselName" placeholder="e.g. MV Saitama Maru">
+        </div>
+        <div>
+            <label>Voyage Number:</label>
+            <input type="text" id="voyageNo" placeholder="e.g. 024-OUT">
+        </div>
+    </div>
+    <div class="grid-2">
+        <div>
+            <label>Officer on Watch (OOW):</label>
+            <input type="text" id="oowName" placeholder="e.g. Juan Dela Cruz (2M)">
+        </div>
+        <div>
+            <label>Remarks / Target Description:</label>
+            <input type="text" id="remarks" placeholder="e.g. Evening Star Sight / Good Horizon">
+        </div>
+    </div>
+
+    <h3>🌌 Target Body</h3>
     <label>Select Celestial Body / Target Star:</label>
     <select id="bodySelect">
         <optgroup label="Core Bodies">
@@ -121,7 +144,7 @@
 
     <button onclick="performFullCelestialCalculation()">CALCULATE LOP & UPDATE SKY MAP</button>
     <div class="grid-2">
-        <button class="btn-secondary" onclick="saveData()">💾 SAVE RECORD</button>
+        <button class="btn-secondary" style="background-color: #10B981; color: #0F172A;" onclick="downloadLocalRecordFile()">💾 DOWNLOAD LOCAL RECORD (.TXT)</button>
         <button class="btn-secondary" onclick="window.print()">🖨️ PRINT REPORT</button>
     </div>
 
@@ -147,13 +170,11 @@
         <canvas id="plotCanvas"></canvas>
 
         <h3>🌌 Star Finder & Sky Map</h3>
-        <p style="font-size: 13px; color: #94A3B8; margin-bottom: 2px;">Ipinapakita nito ang real-time orientation ng mga bituin sa ibabaw ng iyong horizon. Ang kulay <b>Pula</b> ang napili mong target.</p>
         <canvas id="skyCanvas"></canvas>
     </div>
 </div>
 
 <script>
-    // Database ng Bituin para sa Star Finder (SHA at Dec)
     const starDatabase = {
         sirius: { name: "Sirius", sha: 258.4, dec: -16.7 },
         canopus: { name: "Canopus", sha: 263.9, dec: -52.7 },
@@ -166,6 +187,9 @@
         spica: { name: "Spica", sha: 158.4, dec: -11.2 },
         pollux: { name: "Pollux", sha: 243.4, dec: 28.0 }
     };
+
+    // Global variable object para madaling hatakin ng local save download module
+    let globalLogData = {};
 
     function calculateUTC() {
         const localInput = document.getElementById('localTime').value;
@@ -195,15 +219,13 @@
         let lat = latDeg + (latMin / 60);
         if(document.getElementById('latDir').value === 'S') lat = -lat;
 
-        // Kunin ang info ng napiling celestial body galing sa listahan
         let selectedBody = document.getElementById('bodySelect').value;
         let gha = 48.55; 
         let dec = 18.22; 
 
-        // Kung bituin ang pinili, i-sync ang GHA at Dec mula sa astronomical formulas
         if (starDatabase[selectedBody]) {
             dec = starDatabase[selectedBody].dec;
-            let ghaAries = 150.25; // Simulated Greenwich Hour Angle of Aries
+            let ghaAries = 150.25; 
             gha = (ghaAries + starDatabase[selectedBody].sha) % 360;
         }
         
@@ -230,7 +252,7 @@
         let B = Math.tan(decRad) / Math.sin(lhaRad);
         let C = A - B; 
 
-        let sinHc = (Math.sin(latRad) * Math.sin(decDec = decRad)) + (Math.cos(latRad) * Math.cos(decRad) * Math.cos(lhaRad));
+        let sinHc = (Math.sin(latRad) * Math.sin(decRad)) + (Math.cos(latRad) * Math.cos(decRad) * Math.cos(lhaRad));
         let hcRad = Math.asin(sinHc);
         let hc = hcRad * 180 / Math.PI;
 
@@ -245,6 +267,7 @@
         let interceptMinutes = (ho - hc) * 60; 
         let directionTxt = interceptMinutes >= 0 ? "Towards" : "Away";
 
+        // Isulat sa screen ang mga value
         document.getElementById('outHo').innerText = ho.toFixed(4) + "°";
         document.getElementById('outGHA').innerText = gha.toFixed(2) + "°";
         document.getElementById('outDec').innerText = dec.toFixed(2) + "°";
@@ -261,6 +284,68 @@
         
         drawPlottingChart(zn, interceptMinutes);
         drawSkyMap(lat, selectedBody, zn, hc);
+
+        // I-save pansamantala sa memory para sa file export mamaya
+        globalLogData = {
+            vessel: document.getElementById('vesselName').value || "N/A",
+            voyage: document.getElementById('voyageNo').value || "N/A",
+            oow: document.getElementById('oowName').value || "N/A",
+            remarks: document.getElementById('remarks').value || "N/A",
+            target: starDatabase[selectedBody] ? starDatabase[selectedBody].name : selectedBody.toUpperCase(),
+            utc: document.getElementById('utcTime').value,
+            ap: `${latDeg}°${latMin}'${document.getElementById('latDir').value} / ${lonDeg}°${lonMin}'${document.getElementById('lonDir').value}`,
+            ho: ho.toFixed(4) + "°",
+            gha: gha.toFixed(2) + "°",
+            dec: dec.toFixed(2) + "°",
+            abc: `A: ${A.toFixed(4)} | B: ${B.toFixed(4)} | C: ${C.toFixed(4)}`,
+            hc: hc.toFixed(4) + "°",
+            intercept: Math.abs(interceptMinutes).toFixed(1) + " NM " + directionTxt,
+            zn: zn.toFixed(1) + "° True"
+        };
+    }
+
+    // PINALAKAS NA ARTIFACT DOWNLOAD ENGINE (SA-SAVE SA LOCAL DRIVE NG CELPHONE MO)
+    function downloadLocalRecordFile() {
+        if (!globalLogData.zn) {
+            alert("⚠️ Paki-pindot muna ang 'CALCULATE LOP' bago i-download ang record.");
+            return;
+        }
+
+        // I-format ang itsura ng text file na parang opisyal na report ng barko
+        let fileContent = `==================================================\n`;
+        fileContent += `             BMS LOP-CALCULATOR REPORT            \n`;
+        fileContent += `==================================================\n`;
+        fileContent += `Vessel Name : ${globalLogData.vessel}\n`;
+        fileContent += `Voyage No   : ${globalLogData.voyage}\n`;
+        fileContent += `OOW Name    : ${globalLogData.oow}\n`;
+        fileContent += `Remarks     : ${globalLogData.remarks}\n`;
+        fileContent += `Date / UTC  : ${globalLogData.utc}\n`;
+        fileContent += `--------------------------------------------------\n`;
+        fileContent += `Target Body : ${globalLogData.target}\n`;
+        fileContent += `Assumed Pos : ${globalLogData.ap}\n`;
+        fileContent += `--------------------------------------------------\n`;
+        fileContent += `GHA Fetched : ${globalLogData.gha}\n`;
+        fileContent += `Declination : ${globalLogData.dec}\n`;
+        fileContent += `True Alt(Ho): ${globalLogData.ho}\n`;
+        fileContent += `--------------------------------------------------\n`;
+        fileContent += `ABC VALUES  : ${globalLogData.abc}\n`;
+        fileContent += `--------------------------------------------------\n`;
+        fileContent += `Calc Alt(Hc): ${globalLogData.hc}\n`;
+        fileContent += `INTERCEPT   : ${globalLogData.intercept}\n`;
+        fileContent += `AZIMUTH (Zn): ${globalLogData.zn}\n`;
+        fileContent += `==================================================\n`;
+        fileContent += `Generated by LOP-CALCULATOR | Safe Voyage Always!\n`;
+
+        // GUMAWA NG DOWNLOAD LINK DEREKTA SA STORAGE
+        let blob = new Blob([fileContent], { type: "text/plain;charset=utf-8" });
+        let link = document.createElement("a");
+        
+        // Pangalan ng file ay may kasamang Voyage at target body para madaling hanapin
+        link.download = `LOP_Report_Voy_${globalLogData.voyage.replace(/\s+/g, '_')}.txt`;
+        link.href = URL.createObjectURL(blob);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 
     function drawPlottingChart(zn, intercept) {
@@ -268,109 +353,58 @@
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         const cx = canvas.width / 2; const cy = canvas.height / 2;
-
         ctx.strokeStyle = '#334155'; ctx.lineWidth = 1; ctx.beginPath();
         ctx.arc(cx, cy, 100, 0, 2 * Math.PI);
         ctx.moveTo(cx - 130, cy); ctx.lineTo(cx + 130, cy);
         ctx.moveTo(cx, cy - 130); ctx.lineTo(cx, cy + 130); ctx.stroke();
-
         ctx.fillStyle = '#94A3B8'; ctx.font = '12px Arial';
         ctx.fillText("AP (Center)", cx + 10, cy - 10);
-
         let znRad = (zn - 90) * Math.PI / 180; 
         let targetX = cx + 120 * Math.cos(znRad); let targetY = cy + 120 * Math.sin(znRad);
-
         ctx.strokeStyle = '#F59E0B'; ctx.lineWidth = 1.5; ctx.setLineDash([5, 3]);
         ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(targetX, targetY); ctx.stroke(); ctx.setLineDash([]); 
-
         let scale = 3; let plotDist = intercept * scale;
         let ix = cx + plotDist * Math.cos(znRad); let iy = cy + plotDist * Math.sin(znRad);
-
         ctx.fillStyle = '#10B981'; ctx.beginPath(); ctx.arc(ix, iy, 5, 0, 2 * Math.PI); ctx.fill();
-
         let lopRad = znRad + (90 * Math.PI / 180);
         let lopX1 = ix + 100 * Math.cos(lopRad); let lopY1 = iy + 100 * Math.sin(lopRad);
         let lopX2 = ix - 100 * Math.cos(lopRad); let lopY2 = iy - 100 * Math.sin(lopRad);
-
         ctx.strokeStyle = '#38BDF8'; ctx.lineWidth = 3; ctx.beginPath();
         ctx.moveTo(lopX1, lopY1); ctx.lineTo(lopX2, lopY2); ctx.stroke();
         ctx.fillStyle = '#38BDF8'; ctx.fillText("LOP", lopX1 - 30, lopY1 - 10);
     }
 
-    // FUNCTION PARA SA STAR FINDER & SKY MAP RADAR
     function drawSkyMap(userLat, targetKey, targetZn, targetHc) {
         const canvas = document.getElementById('skyCanvas');
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        const cx = canvas.width / 2;
-        const cy = canvas.height / 2;
-        const radius = 120;
-
-        // Sky Map Horizon Circles
-        ctx.strokeStyle = '#1E293B'; ctx.lineWidth = 2;
-        ctx.fillStyle = '#0B0F19';
+        const cx = canvas.width / 2; const cy = canvas.height / 2; const radius = 120;
+        ctx.strokeStyle = '#1E293B'; ctx.lineWidth = 2; ctx.fillStyle = '#0B0F19';
         ctx.beginPath(); ctx.arc(cx, cy, radius, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
-        
-        // Inner rings for Altitudes (30° at 60°)
         ctx.strokeStyle = '#334155'; ctx.setLineDash([3, 3]);
-        ctx.beginPath(); ctx.arc(cx, cy, radius * 0.66, 0, 2 * Math.PI); ctx.stroke(); // 30 Deg Ring
-        ctx.beginPath(); ctx.arc(cx, cy, radius * 0.33, 0, 2 * Math.PI); ctx.stroke(); // 60 Deg Ring
-        ctx.setLineDash([]);
+        ctx.beginPath(); ctx.arc(cx, cy, radius * 0.66, 0, 2 * Math.PI); ctx.stroke();
+        ctx.beginPath(); ctx.arc(cx, cy, radius * 0.33, 0, 2 * Math.PI); ctx.stroke();
+        ctx.setLineDash([]); ctx.strokeStyle = '#1E293B'; ctx.beginPath();
+        ctx.moveTo(cx - radius, cy); ctx.lineTo(cx + radius, cy); ctx.moveTo(cx, cy - radius); ctx.lineTo(cx, cy + radius); ctx.stroke();
+        ctx.fillStyle = '#64748B'; ctx.font = 'bold 11px Arial'; ctx.fillText("N", cx - 4, cy - radius - 5); ctx.fillText("S", cx - 4, cy + radius + 14); ctx.fillText("E", cx + radius + 6, cy + 4); ctx.fillText("W", cx - radius - 16, cy + 4);
 
-        // Cardinal Crosslines (N, S, E, W)
-        ctx.strokeStyle = '#1E293B';
-        ctx.beginPath();
-        ctx.moveTo(cx - radius, cy); ctx.lineTo(cx + radius, cy);
-        ctx.moveTo(cx, cy - radius); ctx.lineTo(cx, cy + radius);
-        ctx.stroke();
-
-        // Labels for Directions
-        ctx.fillStyle = '#64748B'; ctx.font = 'bold 11px Arial';
-        ctx.fillText("N", cx - 4, cy - radius - 5);
-        ctx.fillText("S", cx - 4, cy + radius + 14);
-        ctx.fillText("E", cx + radius + 6, cy + 4);
-        ctx.fillText("W", cx - radius - 16, cy + 4);
-
-        // I-plot ang lahat ng bituin na nasa Database (Mga katabing bituin sa kalangitan)
         for (let key in starDatabase) {
             let star = starDatabase[key];
-            
-            // Pasimpleng azimuth at altitude mapping para sa offline rendering
-            let pseudoAz = (star.sha * 1.3) % 360; 
-            let pseudoAlt = 90 - Math.abs(userLat - star.dec);
-
-            if (pseudoAlt > 0) { // Render lang kung nasa ibabaw ng horizon
-                let azRad = (pseudoAz - 90) * Math.PI / 180;
-                let dist = radius * (1 - (pseudoAlt / 90));
-                let sx = cx + dist * Math.cos(azRad);
-                let sy = cy + dist * Math.sin(azRad);
-
-                // Default Design ng ibang Bituin (Maliit na kumukitkutitap na kulay puti)
-                ctx.fillStyle = '#FFFFFF';
-                ctx.beginPath(); ctx.arc(sx, sy, 2, 0, 2 * Math.PI); ctx.fill();
-                ctx.fillStyle = '#94A3B8'; ctx.font = '9px Arial';
-                ctx.fillText(star.name, sx + 5, sy + 3);
+            let pseudoAz = (star.sha * 1.3) % 360; let pseudoAlt = 90 - Math.abs(userLat - star.dec);
+            if (pseudoAlt > 0) {
+                let azRad = (pseudoAz - 90) * Math.PI / 180; let dist = radius * (1 - (pseudoAlt / 90));
+                let sx = cx + dist * Math.cos(azRad); let sy = cy + dist * Math.sin(azRad);
+                ctx.fillStyle = '#FFFFFF'; ctx.beginPath(); ctx.arc(sx, sy, 2, 0, 2 * Math.PI); ctx.fill();
+                ctx.fillStyle = '#94A3B8'; ctx.font = '9px Arial'; ctx.fillText(star.name, sx + 5, sy + 3);
             }
         }
-
-        // HIGHLIGHT ANG TARGET CELESTIAL BODY (PULA AT MAY TARHET CROSSHAIR)
-        let tAzRad = (targetZn - 90) * Math.PI / 180;
-        let tDist = radius * (1 - (targetHc / 90));
-        let tx = cx + tDist * Math.cos(tAzRad);
-        let ty = cy + tDist * Math.sin(tAzRad);
-
-        ctx.strokeStyle = '#EF4444'; ctx.lineWidth = 1.5;
-        ctx.beginPath(); ctx.arc(tx, ty, 7, 0, 2 * Math.PI); ctx.stroke(); // Target Ring
-        ctx.fillStyle = '#EF4444'; ctx.beginPath(); ctx.arc(tx, ty, 3, 0, 2 * Math.PI); ctx.fill(); // Target Center Dot
-
+        let tAzRad = (targetZn - 90) * Math.PI / 180; let tDist = radius * (1 - (targetHc / 90));
+        let tx = cx + tDist * Math.cos(tAzRad); let ty = cy + tDist * Math.sin(tAzRad);
+        ctx.strokeStyle = '#EF4444'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(tx, ty, 7, 0, 2 * Math.PI); ctx.stroke();
+        ctx.fillStyle = '#EF4444'; ctx.beginPath(); ctx.arc(tx, ty, 3, 0, 2 * Math.PI); ctx.fill();
         ctx.fillStyle = '#F87171'; ctx.font = 'bold 11px Arial';
         let bodyName = starDatabase[targetKey] ? starDatabase[targetKey].name : targetKey.toUpperCase();
         ctx.fillText("🎯 " + bodyName, tx + 10, ty - 5);
-    }
-
-    function saveData() {
-        alert("💾 LOP-CALCULATOR: Success! Local entry saved.");
     }
 </script>
 
