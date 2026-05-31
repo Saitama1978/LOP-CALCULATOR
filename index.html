@@ -30,7 +30,7 @@
         .almanac-tab { background: #1E293B; padding: 12px; border-radius: 6px; border-left: 4px solid #38BDF8; margin-top: 10px; }
         
         #map { width: 100%; height: 400px; margin-top: 15px; border-radius: 8px; border: 2px solid #38BDF8; background-color: #111827; }
-        canvas { background-color: #111827; border: 1px solid #374151; width: 100%; height: 350px; margin-top: 15px; border-radius: 8px; }
+        canvas { background-color: #111827; border: 1px solid #374151; display: block; margin: 15px auto 0 auto; border-radius: 8px; }
         
         .dev-footer { text-align: center; margin-top: 30px; padding-top: 15px; border-top: 1px solid #334155; font-size: 12px; color: #64748B; }
         .dev-name { color: #F59E0B; font-weight: bold; font-size: 14px; letter-spacing: 0.5px; margin-top: 3px; }
@@ -74,13 +74,63 @@
             <option value="saturn">Saturn</option>
         </optgroup>
         <optgroup label="57 Navigational Stars">
-            <option value="antares">44. Antares</option>
-            <option value="sirius">18. Sirius</option>
-            <option value="canopus">17. Canopus</option>
+            <option value="alpheratz">1. Alpheratz</option>
+            <option value="ankaa">2. Ankaa</option>
+            <option value="schedar">3. Schedar</option>
+            <option value="diphda">4. Diphda</option>
+            <option value="achernar">5. Achernar</option>
+            <option value="hamal">6. Hamal</option>
+            <option value="acamar">7. Acamar</option>
+            <option value="menkar">8. Menkar</option>
+            <option value="mirfak">9. Mirfak</option>
+            <option value="alcyone">10. Alcyone</option>
             <option value="rigel">11. Rigel</option>
-            <option value="spica">35. Spica</option>
-            <option value="vega">51. Vega</option>
-            <!-- Idagdag pa ang ibang bituin kung kinakailangan -->
+            <option value="capella">12. Capella</option>
+            <option value="bellatrix">13. Bellatrix</option>
+            <option value="elnath">14. Elnath</option>
+            <option value="alnilam">15. Alnilam</option>
+            <option value="betelgeuse">16. Betelgeuse</option>
+            <option value="canopus">17. Canopus</option>
+            <option value="sirius">18. Sirius</option>
+            <option value="adhara">19. Adhara</option>
+            <option value="procyon">20. Procyon</option>
+            <option value="pollux">21. Pollux</option>
+            <option value="avior">22. Avior</option>
+            <option value="suhail">23. Suhail</option>
+            <option value="miaplacidus">24. Miaplacidus</option>
+            <option value="alphard">25. Alphard</option>
+            <option value="regulus">26. Regulus</option>
+            <option value="dubhe">27. Dubhe</option>
+            <option value="gieddah">28. Denebola</option>
+            <option value="gienah">29. Gienah</option>
+            <option value="acrux">30. Acrux</option>
+            <option value="gacrux">31. Gacrux</option>
+            <option value="alioth">32. Alioth</option>
+            <option value="spica">33. Spica</option>
+            <option value="alcaid">34. Alkaid</option>
+            <option value="hadar">35. Hadar</option>
+            <option value="menkent">36. Menkent</option>
+            <option value="arcturus">37. Arcturus</option>
+            <option value="rigil_kent">38. Rigil Kentaurus</option>
+            <option value="zubenelgenubi">39. Zubenelgenubi</option>
+            <option value="kochab">40. Kochab</option>
+            <option value="alphecca">41. Alphecca</option>
+            <option value="antares">42. Antares</option>
+            <option value="atria">43. Atria</option>
+            <option value="sabik">44. Sabik</option>
+            <option value="shaula">45. Shaula</option>
+            <option value="rasalhague">46. Rasalhague</option>
+            <option value="etamin">47. Etamin</option>
+            <option value="kaus_australis">48. Kaus Australis</option>
+            <option value="vega">49. Vega</option>
+            <option value="nunki">50. Nunki</option>
+            <option value="altair">51. Altair</option>
+            <option value="peacock">52. Peacock</option>
+            <option value="deneb">53. Deneb</option>
+            <option value="enif">54. Enif</option>
+            <option value="alnaair">55. Alnair</option>
+            <option value="fomalhaut">56. Fomalhaut</option>
+            <option value="markab">57. Markab</option>
         </optgroup>
     </select>
 
@@ -92,17 +142,14 @@
         </select>
     </div>
 
-    <!-- CONTROL TOGGLE FOR MANUAL INPUT -->
     <div class="checkbox-container">
         <input type="checkbox" id="manualOverrideToggle" onchange="toggleManualSection()">
         <label for="manualOverrideToggle" style="margin:0; color:#F59E0B; cursor:pointer; font-weight: bold;">⚠️ ENABLE MANUAL INPUT FROM PHYSICAL NAUTICAL ALMANAC</label>
     </div>
 
-    <!-- NEW SMART MAGKAHIWALAY NA MANUAL INPUT SECTIONS -->
     <div id="manualSection" class="manual-section">
         <h4 style="margin-top:0; color:#EF4444; border-bottom: 1px dashed #EF4444; padding-bottom:5px;">📖 Physical Almanac Manual Entry Panel</h4>
         
-        <!-- TAB 1: PARA SA SUN AT PLANETS LANG -->
         <div id="tabSolarPlanets" class="almanac-tab">
             <span style="color:#38BDF8; font-weight:bold;">☀️ Sun / Planets Calculator Breakdown:</span>
             <div class="grid-2" style="margin-top:10px;">
@@ -134,7 +181,6 @@
             </div>
         </div>
 
-        <!-- TAB 2: PARA SA MGA BITUIN LANG (ARIES + SHA) -->
         <div id="tabStars" class="almanac-tab" style="display:none;">
             <span style="color:#F59E0B; font-weight:bold;">⭐ Star Equation Breakdown (GHA Aries + SHA + Inc):</span>
             <div class="grid-3" style="margin-top:10px;">
@@ -263,7 +309,7 @@
         <div id="map"></div>
 
         <h3>🌌 Star Finder Sky Chart</h3>
-        <canvas id="skyCanvas"></canvas>
+        <canvas id="skyCanvas" width="350" height="350"></canvas>
     </div>
 
     <div class="dev-footer">
@@ -291,6 +337,9 @@
         map = L.map('map').setView([14.5, 120.75], 8);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(map);
         mapLayerGroup = L.layerGroup().addTo(map);
+        
+        // Initial Draw ng Empty Sky Chart Canvas
+        drawSkyChart(0, 0, "No Target");
     }
 
     function calculateUTC() {
@@ -301,12 +350,10 @@
         document.getElementById('utcTime').value = new Date(localDate.getTime() - (zd * 60 * 60 * 1000)).toUTCString();
     }
 
-    // AUTOMATIC INPUT ROUTING ACCORDING TO TARGET BODY TYPE
     function handleBodyChange() {
         const selectedBody = document.getElementById('bodySelect').value;
         document.getElementById('sunLimbSection').style.display = (selectedBody === "sun") ? "block" : "none";
         
-        // I-switch ang tabs ng manual entries base sa piniling target
         const isStar = !["sun", "venus", "mars", "jupiter", "saturn"].includes(selectedBody);
         document.getElementById('tabSolarPlanets').style.display = isStar ? "none" : "block";
         document.getElementById('tabStars').style.display = isStar ? "block" : "none";
@@ -325,6 +372,85 @@
         if (!globalLogData.zn) { alert("⚠️ Paki-calculate muna ang LOP."); return; }
         map.invalidateSize();
         setTimeout(function() { window.print(); }, 300);
+    }
+
+    // FUNCTION PARA MAG-DRAW SA CANVAS (SKY VIEW CHART ENGINE)
+    function drawSkyChart(zn, hc, bodyName) {
+        const canvas = document.getElementById('skyCanvas');
+        const ctx = canvas.getContext('2d');
+        const cx = canvas.width / 2;
+        const cy = canvas.height / 2;
+        const rMax = cx - 30; // Outer Radar Circle Radius
+
+        // Clear Canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Background Circular Grid
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 1;
+        
+        // Elevation Concentric Circles (30°, 60°, Horizon)
+        let rings = [0.33, 0.66, 1];
+        rings.forEach(p => {
+            ctx.beginPath();
+            ctx.arc(cx, cy, rMax * p, 0, 2 * Math.PI);
+            ctx.stroke();
+        });
+
+        // Crosshairs (Azimuth axis lines)
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - rMax); ctx.lineTo(cx, cy + rMax);
+        ctx.moveTo(cx - rMax, cy); ctx.lineTo(cx + rMax, cy);
+        ctx.stroke();
+
+        // Labels ng Compass Direction Cardinal Points
+        ctx.fillStyle = '#94A3B8';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('N', cx, cy - rMax - 12);
+        ctx.fillText('S', cx, cy + rMax + 12);
+        ctx.fillText('E', cx + rMax + 12, cy);
+        ctx.fillText('W', cx - rMax - 12, cy);
+
+        // Huwag ituloy kung walang valid target data o default load lang
+        if(hc === 0 && zn === 0) return;
+
+        // I-plot ang Celestial Target Position gamit ang Stereographic/Radar projection
+        // Ang kitang altitude ay mula 0° sa horizon hanggang 90° sa Zenit (gitna)
+        let normalizedRadius = ((90 - hc) / 90) * rMax;
+        
+        // I-convert ang true navigation azimuth (0° sa itaas/N, clockwise) sa standard math radians
+        let angleRad = (zn - 90) * Math.PI / 180;
+        let starX = cx + normalizedRadius * Math.cos(angleRad);
+        let starY = cy + normalizedRadius * Math.sin(angleRad);
+
+        // Drowing ng Line of Sight (Vector line mula sa Observer papunta sa Target)
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(starX, starY);
+        ctx.stroke();
+        ctx.setLineDash([]); // I-reset ang line dash
+
+        // Drowing ng Glowing Star Indicator
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = '#F59E0B';
+        ctx.fillStyle = '#F59E0B';
+        ctx.beginPath();
+        ctx.arc(starX, starY, 7, 0, 2 * Math.PI);
+        ctx.fill();
+        
+        // Reset Shadow parameters
+        ctx.shadowBlur = 0;
+
+        // Label Tagging ng Pangalan ng Target Body malapit sa Star dot
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(` ${bodyName.toUpperCase()} (Zn:${zn.toFixed(1)}°, Hc:${hc.toFixed(1)}°)`, starX + 8, starY);
     }
 
     function performFullCelestialCalculation() {
@@ -350,10 +476,8 @@
         
         let baseGha = 0, dec = 0;
 
-        // HIGH ACCURACY MANUAL ENTRIES MULTI-TRACK INTERPRETER
         if (document.getElementById('manualOverrideToggle').checked) {
             if (!isStar) {
-                // Para sa Sun at Planets
                 let solD = parseFloat(document.getElementById('solGhaDeg').value) || 0;
                 let solM = parseFloat(document.getElementById('solGhaMin').value) || 0;
                 let solInc = parseFloat(document.getElementById('solGhaInc').value) || 0;
@@ -365,7 +489,6 @@
                 dec = decD + ((decM + decC) / 60);
                 if (document.getElementById('solDecDir').value === 'S') dec = -dec;
             } else {
-                // Equation para sa Bituin (Antares, etc): GHA Aries + Inc + SHA
                 let arD = parseFloat(document.getElementById('strAriesDeg').value) || 0;
                 let arM = parseFloat(document.getElementById('strAriesMin').value) || 0;
                 let arInc = parseFloat(document.getElementById('strAriesInc').value) || 0;
@@ -381,11 +504,9 @@
                 if (document.getElementById('strDecDir').value === 'S') dec = -dec;
             }
         } else {
-            // Fallback sa Auto kung hindi naka-check ang manual mode
-            baseGha = 199.95; dec = -26.51; // Simulated values for internal bypass
+            baseGha = 199.95; dec = -26.51; 
         }
 
-        // CORRECT TIME INTEGRATED LOCAL HOUR ANGLE (LHA) FOR DR SIGHTS
         let lha = (lonDir === 'E') ? (baseGha + lon) : (baseGha - Math.abs(lon));
         lha = (lha % 360 + 360) % 360;
         
@@ -431,8 +552,16 @@
         document.getElementById('outZ').innerText = Z.toFixed(1) + "°";
         document.getElementById('outZn').innerText = zn.toFixed(1) + "° True";
 
+        // I-store sa global para sa printing module
+        globalLogData.zn = zn;
+
         document.getElementById('resultBox').style.display = "block";
         plotOnGeographicMap(lat, lon, zn, interceptMinutes, selectedBody.toUpperCase());
+        
+        // TRIGGER ANG METODO PARA MAG-UPDATE ANG GRAPHICAL CANVAS SKY VIEW
+        const bodySelectEl = document.getElementById('bodySelect');
+        const selectedBodyText = bodySelectEl.options[bodySelectEl.selectedIndex].text;
+        drawSkyChart(zn, hc, selectedBodyText);
     }
 
     function plotOnGeographicMap(apLat, apLon, zn, interceptNM, targetName) {
