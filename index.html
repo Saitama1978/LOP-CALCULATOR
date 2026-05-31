@@ -67,7 +67,7 @@
     <label>Select Celestial Body:</label>
     <select id="bodySelect" onchange="handleBodyChange()">
         <optgroup label="Core Solar System (Sun, Moon & Planets)">
-            <option value="sun" selected>Sun</option>
+            <option value="sun" selected>Sun (Araw)</option>
             <option value="moon">Moon (Buwan)</option>
             <option value="venus">Venus</option>
             <option value="mars">Mars</option>
@@ -135,22 +135,14 @@
         </optgroup>
     </select>
 
-    <div id="sunLimbSection">
-        <label>Sun Limb Selection:</label>
-        <select id="sunLimb">
-            <option value="lower" selected>Lower Limb (Ibaba - Karaniwan)</option>
-            <option value="upper">Upper Limb (Itaas)</option>
+    <div id="solarMoonLimbSection" style="background: #1E293B; padding: 12px; border-radius: 6px; margin-top: 10px; border: 1px solid #0EA5E9;">
+        <label id="limbLabel" style="color:#38BDF8; margin-top:0;">Sun Limb Selection:</label>
+        <select id="bodyLimb">
+            <option value="lower" selected>Lower Limb (Ibaba - Karaniwan) [ Add SD ]</option>
+            <option value="upper">Upper Limb (Itaas) [ Sub SD ]</option>
         </select>
-    </div>
-
-    <div id="moonLimbSection" style="display:none; background: #1E293B; padding: 12px; border-radius: 6px; margin-top: 10px; border: 1px solid #0EA5E9;">
-        <label style="color:#38BDF8; margin-top:0;">Moon Limb Selection:</label>
-        <select id="moonLimb">
-            <option value="lower" selected>Lower Limb (LL) [ Add SD ]</option>
-            <option value="upper">Upper Limb (UL) [ Sub SD ]</option>
-        </select>
-        <label style="color:#38BDF8;">Almanac Moon Semi-Diameter (SD):</label>
-        <input type="number" id="moonSdValue" value="16.0" step="0.1" placeholder="Minutes of Arc (e.g. 15.4)">
+        <label id="sdLabel" style="color:#38BDF8;">Almanac Sun Semi-Diameter (SD):</label>
+        <input type="number" id="bodySdValue" value="16.0" step="0.1" placeholder="Minutes of Arc (e.g. 15.8)">
     </div>
 
     <div class="checkbox-container">
@@ -360,11 +352,27 @@
         document.getElementById('utcTime').value = new Date(localDate.getTime() - (zd * 60 * 60 * 1000)).toUTCString();
     }
 
-    // FIXED HANDLE BODY CHANGE FOR SUN, MOON AND STARS TOGGLE
+    // UPDATED HANDLE BODY TOGGLE WITH EDITABLE SUN AND MOON SD VALUE
     function handleBodyChange() {
         const selectedBody = document.getElementById('bodySelect').value;
-        document.getElementById('sunLimbSection').style.display = (selectedBody === "sun") ? "block" : "none";
-        document.getElementById('moonLimbSection').style.display = (selectedBody === "moon") ? "block" : "none";
+        const limbSection = document.getElementById('solarMoonLimbSection');
+        const limbLabel = document.getElementById('limbLabel');
+        const sdLabel = document.getElementById('sdLabel');
+        const sdInput = document.getElementById('bodySdValue');
+
+        if (selectedBody === "sun") {
+            limbSection.style.display = "block";
+            limbLabel.innerText = "Sun Limb Selection:";
+            sdLabel.innerText = "Almanac Sun Semi-Diameter (SD):";
+            sdInput.value = "16.0";
+        } else if (selectedBody === "moon") {
+            limbSection.style.display = "block";
+            limbLabel.innerText = "Moon Limb Selection:";
+            sdLabel.innerText = "Almanac Moon Semi-Diameter (SD):";
+            sdInput.value = "16.0";
+        } else {
+            limbSection.style.display = "none";
+        }
         
         const isStar = !["sun", "moon", "venus", "mars", "jupiter", "saturn"].includes(selectedBody);
         document.getElementById('tabSolarPlanets').style.display = isStar ? "none" : "block";
@@ -516,12 +524,10 @@
         let ha = hs + ie - dip; 
         let ho = ha - ((1.0 / Math.tan(ha * Math.PI / 180)) / 60);
 
-        // FIXED MATHEMATICAL CORRECTION LOGIC FOR SUN AND MOON SD VALUE
-        if (selectedBody === "sun") {
-            ho += (document.getElementById('sunLimb').value === "lower") ? (16.0 / 60) : -(16.0 / 60);
-        } else if (selectedBody === "moon") {
-            let moonSd = parseFloat(document.getElementById('moonSdValue').value) || 16.0;
-            ho += (document.getElementById('moonLimb').value === "lower") ? (moonSd / 60) : -(moonSd / 60);
+        // MATHEMATICAL CORRECTION LOGIC USING THE DYNAMIC SD VALUE FOR BOTH SUN AND MOON
+        if (selectedBody === "sun" || selectedBody === "moon") {
+            let customSd = parseFloat(document.getElementById('bodySdValue').value) || 16.0;
+            ho += (document.getElementById('bodyLimb').value === "lower") ? (customSd / 60) : -(customSd / 60);
         }
 
         let latRad = lat * Math.PI / 180; let decRad = dec * Math.PI / 180; let lhaRad = lha * Math.PI / 180;
